@@ -1,0 +1,41 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "hlcc",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/lib-umd/index.js",
+            "args": [
+                "./sample/helloWorld.ho"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/lib-umd/**/*.js"
+            ]
+        },
+        {
+            "name": "Extension",
+            "type": "extensionHost",
+            "request": "launch",
+            // path to VSCode executable
+            "runtimeExecutable": "${execPath}",
+            "args": [
+                "--disable-extensions",
+                "--extensionDevelopmentPath=${workspaceRoot}",
+                "--enable-proposed-api"
+            ],
+            "outFiles": [
+                "${workspaceRoot}/lib-umd/*.js"
+            ],
+            "stopOnEntry": false,
+            "sourceMaps": true,
+            "internalConsoleOptions": "neverOpen"
+        }
+    ]
+}

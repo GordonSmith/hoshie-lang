@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {
+        "rootDir": "./src",
+        "module": "umd",
+        "moduleResolution": "node",
+        "target": "ES2019",
+        "outDir": "lib-umd",
+        "jsx": "react",
+        "allowJs": true,
+        "sourceMap": true,
+        "noImplicitAny": false,
+        "noEmitOnError": false,
+        "noUnusedLocals": false,
+        "strictNullChecks": false,
+        "importHelpers": true,
+        "skipLibCheck": true,
+        "lib": [
+            "dom",
+            "ES2019"
+        ]
+    },
+    "include": [
+        "./src/**/*.ts",
+        "./src/**/*.tsx",
+        "./node_modules/vscode/vscode.d.ts",
+        "./node_modules/vscode-debugadapter/lib/*",
+        "./node_modules/vscode/lib/*"
+    ]
+}
