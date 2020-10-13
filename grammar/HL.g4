@@ -1,184 +1,113 @@
 grammar HL;
 
 //  ---  Parser  ---
-program
-    : sourceElements? EOF
-    ;
+program: sourceElements? EOF;
 
-sourceElements
-    : sourceElement+
-    ;
+sourceElements: sourceElement+;
 
-sourceElement
-    : statement
-    ;
+sourceElement: statement;
 
-statement
-    : block
-    // | variableStatement
-    | importStatement
-    // | exportStatement
-    | emptyStatement
-    // | classDeclaration
-    // | expressionStatement
-    // | ifStatement
-    // | iterationStatement
-    // | continueStatement
-    // | breakStatement
-    // | returnStatement
-    // | yieldStatement
-    // | withStatement
-    // | labelledStatement
-    // | switchStatement
-    // | throwStatement
-    // | tryStatement
-    // | debuggerStatement
-    // | functionDeclaration
-    ;
+statement:
+	block
+	// | variableStatement
+	| importStatement
+	// | exportStatement
+	| emptyStatement
+	// | classDeclaration | expressionStatement | ifStatement | iterationStatement |
+	// continueStatement | breakStatement | returnStatement | yieldStatement | withStatement |
+	// labelledStatement | switchStatement | throwStatement | tryStatement | debuggerStatement |
+	// functionDeclaration;
 
-block
-    : '{' statementList? '}'
-    ;
+block: '{' statementList? '}';
 
-statementList
-    : statement+
-    ;
+statementList: statement+;
 
-importStatement
-    : Import importFromBlock
-    ;
-    
-importFromBlock
-    : importDefault? (importNamespace | moduleItems) importFrom eos
-    | StringLiteral eos
-    ;
+importStatement: Import importFromBlock;
 
-moduleItems
-    : '{' (aliasName ',')* (aliasName ','?)? '}'
-    ;
+importFromBlock:
+	importDefault? (importNamespace | moduleItems) importFrom eos
+	| StringLiteral eos;
 
-importDefault
-    : aliasName ','
-    ;
+moduleItems: '{' (aliasName ',')* (aliasName ','?)? '}';
 
-importNamespace
-    : ('*' | identifierName) (As identifierName)?
-    ;
+importDefault: aliasName ',';
 
-importFrom
-    : From StringLiteral
-    ;
+importNamespace: ('*' | identifierName) (As identifierName)?;
 
-aliasName
-    : identifierName (As identifierName)?
-    ;
+importFrom: From StringLiteral;
 
-identifierName
-    : identifier
-    | reservedWord
-    ;
+aliasName: identifierName (As identifierName)?;
 
-identifier
-    : Identifier
-    ;
+identifierName: identifier | reservedWord;
 
-reservedWord
-    : keyword
-    | NullLiteral
-    | BooleanLiteral
-    ;
+identifier: Identifier;
 
-keyword
-    :String
-    ;
+reservedWord: keyword | NullLiteral | BooleanLiteral;
 
-emptyStatement
-    : SemiColon
-    ;
+keyword: String;
 
-eos
-    : SemiColon
-    | EOF
-    ;
+emptyStatement: SemiColon;
+
+eos: SemiColon | EOF;
 
 //  --- Lexer  ---
-SemiColon:                      ';';
+SemiColon: ';';
 
-Import:                         'import';
-String:                         'string';
-As:                             'as';
-From:                           'from';
+Import: 'import';
+String: 'string';
+Boolean: 'boolean';
+Number: 'number';
+As: 'as';
+From: 'from';
 
-Identifier:                     IdentifierStart IdentifierPart*;
+Identifier: IdentifierStart IdentifierPart*;
 
-StringLiteral:                 ('"' DoubleStringCharacter* '"'
-             |                  '\'' SingleStringCharacter* '\'')
-             ;
+StringLiteral: (
+		'"' DoubleStringCharacter* '"'
+		| '\'' SingleStringCharacter* '\''
+	);
 
-NullLiteral:                    'null';
+NullLiteral: 'null';
 
-BooleanLiteral:                 'true'
-              |                 'false';
+BooleanLiteral: 'true' | 'false';
 
-fragment IdentifierPart
-    : IdentifierStart
-    | [0-9]
-    | '\u200C'
-    | '\u200D'
-    ;
+fragment IdentifierPart:
+	IdentifierStart
+	| [0-9]
+	| '\u200C'
+	| '\u200D';
 
-fragment IdentifierStart
-    : [_]
-    | [a-zA-Z]
-    ;
+fragment IdentifierStart: [_] | [a-zA-Z];
 
-fragment DoubleStringCharacter
-    : ~["\\\r\n]
-    | '\\' EscapeSequence
-    | LineContinuation
-    ;
+fragment DoubleStringCharacter:
+	~["\\\r\n]
+	| '\\' EscapeSequence
+	| LineContinuation;
 
-fragment SingleStringCharacter
-    : ~['\\\r\n]
-    | '\\' EscapeSequence
-    | LineContinuation
-    ;
+fragment SingleStringCharacter:
+	~['\\\r\n]
+	| '\\' EscapeSequence
+	| LineContinuation;
 
-fragment EscapeSequence
-    : CharacterEscapeSequence
-    | '0' // no digit ahead! TODO
-    | HexEscapeSequence
-    ;
+fragment EscapeSequence:
+	CharacterEscapeSequence
+	| '0' // no digit ahead! TODO
+	| HexEscapeSequence;
 
-fragment SingleEscapeCharacter
-    : ['"\\bfnrtv]
-    ;
+fragment SingleEscapeCharacter: ['"\\bfnrtv];
 
-fragment NonEscapeCharacter
-    : ~['"\\bfnrtv0-9xu\r\n]
-    ;
+fragment NonEscapeCharacter: ~['"\\bfnrtv0-9xu\r\n];
 
-fragment EscapeCharacter
-    : SingleEscapeCharacter
-    | [0-9]
-    | [xu]
-    ;
+fragment EscapeCharacter: SingleEscapeCharacter | [0-9] | [xu];
 
-fragment LineContinuation
-    : '\\' [\r\n\u2028\u2029]
-    ;
+fragment LineContinuation: '\\' [\r\n\u2028\u2029];
 
-fragment CharacterEscapeSequence
-    : SingleEscapeCharacter
-    | NonEscapeCharacter
-    ;
+fragment CharacterEscapeSequence:
+	SingleEscapeCharacter
+	| NonEscapeCharacter;
 
-fragment HexEscapeSequence
-    : 'x' HexDigit HexDigit
-    ;
+fragment HexEscapeSequence: 'x' HexDigit HexDigit;
 
-fragment HexDigit
-    : [_0-9a-fA-F]
-    ;
+fragment HexDigit: [_0-9a-fA-F];
 
-WhiteSpace : [ \n\t]+ -> skip;
+WhiteSpace: [ \n\t]+ -> skip;
