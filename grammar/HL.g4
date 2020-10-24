@@ -16,7 +16,8 @@ statement:
 	// | classDeclaration | expressionStatement | ifStatement | iterationStatement |
 	// continueStatement | breakStatement | returnStatement | yieldStatement | withStatement |
 	// labelledStatement | switchStatement | throwStatement | tryStatement | debuggerStatement |
-	// functionDeclaration;
+	// functionDeclaration
+	;
 
 block: '{' statementList? '}';
 

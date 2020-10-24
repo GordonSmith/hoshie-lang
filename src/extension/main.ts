@@ -1,10 +1,13 @@
 import * as vscode from "vscode";
 import { Commands } from "./command";
-import { Diagnostic } from "./diagnostic";
-// import { DocumentSymbolProvider } from "./documentSymbolProvider";
+import { HLDiagnosticCollection } from "./diagnostic";
+import { HLDocumentSymbolProvider } from "./documentSymbolProvider";
 
-export function activate(ctx: vscode.ExtensionContext): void {
+export function hlActivate(ctx: vscode.ExtensionContext): void {
     Commands.attach(ctx);
-    Diagnostic.attach(ctx);
-    // DocumentSymbolProvider.attach(ctx);
+    HLDiagnosticCollection.attach(ctx);
+    HLDocumentSymbolProvider.attach(ctx);
+}
+
+export function hlDeactivate(): void {
 }

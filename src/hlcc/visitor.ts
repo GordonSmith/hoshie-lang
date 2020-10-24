@@ -1,8 +1,15 @@
-import { HLVisitor } from "./grammar/HLVisitor"
+import * as path from "path";
+import { HLVisitor } from "./grammar/HLVisitor";
 
-export class Visitor extends HLVisitor {
+function decodeStringLiteral(str: string) {
+    return str.substring(1, str.length - 2);
+}
 
-    constructor() {
+export class ImportVisitor extends HLVisitor {
+
+    imports: string[] = [];
+
+    constructor(private _filePath: string) {
         super();
     }
 
@@ -14,4 +21,13 @@ export class Visitor extends HLVisitor {
         return super.visitBlock(ctx);
     }
 
+    visitImportStatement(ctx) {
+        return super.visitImportStatement(ctx);
+    }
+
+    visitImportFrom(ctx) {
+        const importFilePath = path.join(path.dirname(this._filePath), decodeStringLiteral(ctx.stop.text)) + ".ho";
+        this.imports.push(importFilePath);
+        return super.visitImportFrom(ctx);
+    }
 }

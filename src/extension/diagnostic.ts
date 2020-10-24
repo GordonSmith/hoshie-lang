@@ -1,9 +1,10 @@
 import * as vscode from "vscode";
+import { HLError } from '../hlcc/errorListener';
 
 let eclDiagnosticCollection: vscode.DiagnosticCollection;
 
-export let diagnostic: Diagnostic;
-export class Diagnostic {
+export let diagnostic: HLDiagnosticCollection;
+export class HLDiagnosticCollection {
     _ctx: vscode.ExtensionContext;
 
     private constructor(ctx: vscode.ExtensionContext) {
@@ -12,14 +13,30 @@ export class Diagnostic {
         ctx.subscriptions.push(eclDiagnosticCollection);
     }
 
-    static attach(ctx: vscode.ExtensionContext): Diagnostic {
+    static attach(ctx: vscode.ExtensionContext): HLDiagnosticCollection {
         if (!diagnostic) {
-            diagnostic = new Diagnostic(ctx);
+            diagnostic = new HLDiagnosticCollection(ctx);
         }
         return diagnostic;
     }
 
-    set(uri: vscode.Uri, diagnostics: vscode.Diagnostic[]) {
-        eclDiagnosticCollection.set(uri, diagnostics);
+    async set(errors: HLError[]) {
+        const fileErrors = {};
+
+        for (const e of errors) {
+            if (!fileErrors[e.filePath]) {
+                fileErrors[e.filePath] = [];
+            }
+            const uri = vscode.Uri.file(e.filePath);
+            const document = await vscode.workspace.openTextDocument(uri);
+            const pos = new vscode.Position(e.line - 1, e.column);
+            const range = document.getWordRangeAtPosition(pos) ?? new vscode.Range(pos, pos);
+            fileErrors[e.filePath].push(new vscode.Diagnostic(range, e.message, vscode.DiagnosticSeverity.Error));
+        }
+
+        for (const key in fileErrors) {
+            const uri = vscode.Uri.file(key);
+            eclDiagnosticCollection.set(uri, fileErrors[key]);
+        }
     }
 }

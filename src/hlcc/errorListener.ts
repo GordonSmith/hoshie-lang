@@ -1,32 +1,33 @@
-// import { Range, TextDocument } from "vscode";
 import { error } from "antlr4";
 
-export interface Antlr4Error {
+export interface HLError {
     source: string;
-    // range: Range;
-    error: { message: string };
+    filePath: string;
+    line: number;
+    column: number;
+    message: string;
 }
 
 export class ErrorListener extends error.ErrorListener {
 
-    errors: Antlr4Error[] = [];
+    errors: HLError[] = [];
 
-    constructor(/*private _doc: TextDocument*/) {
+    constructor(private _filePath: string) {
         super();
     }
 
     syntaxError(recognizer, offendingSymbol, line, column, msg, err) {
         this.errors.push({
-            source: "parser",
-            // range: new Range(this._doc.positionAt(offendingSymbol.start), this._doc.positionAt(offendingSymbol.stop + 1)),
-            error: {
-                message: msg
-            }
+            source: "ErrorListener",
+            filePath: this._filePath,
+            line,
+            column,
+            message: msg
         });
     }
 
     log() {
-        this.errors.forEach(e => console.log(`${e.source}:  ${e.error.message}`));
+        this.errors.forEach(e => console.log(`${e.source}:  ${e.message}`));
     }
 
 }
