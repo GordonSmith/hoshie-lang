@@ -1,6 +1,6 @@
 import { scopedLogger } from "@hpcc-js/util";
 import * as vscode from "vscode";
-import { parse } from "../hlcc/parser";
+import { HLFile } from "../hlcc/file";
 import { HLDiagnosticCollection } from "./diagnostic";
 
 const logger = scopedLogger("documentSymbolProvider.ts");
@@ -25,34 +25,36 @@ export class HLDocumentSymbolProvider implements vscode.DocumentSymbolProvider {
     }
 
     provideDocumentSymbols(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.ProviderResult<vscode.SymbolInformation[] | vscode.DocumentSymbol[]> {
-        return parse(document.fileName, document.getText()).then(parsed => {
-            this._Diagnostic.set(parsed.errors);
+        return new Promise((resolve, reject) => {
+            const hlFile = new HLFile("", document.fileName, document.getText());
+            this._Diagnostic.set(hlFile.allErrors());
 
             const retVal: vscode.DocumentSymbol[] = [];
 
-            function addSymbol(name: string | undefined, detail: string, kind: vscode.SymbolKind, range: vscode.Range, selectionRange: vscode.Range | undefined) {
+            function addSymbol(name: string | undefined, detail: string, kind: vscode.SymbolKind, range?: vscode.Range, selectionRange?: vscode.Range | undefined) {
                 if (name) {
                     retVal.push(new vscode.DocumentSymbol(name, detail, kind, range, selectionRange ?? range));
                 }
             }
 
-            if (parsed) {
-                // parsed.ast.statements.filter(s => s.content).forEach(s => {
-                //     switch (s.content?.type) {
-                //         case "assignment":
-                //             const assign = s.content as assignment;
-                //             addSymbol(assign.lhs?.id?.image, "assignment - " + (assign.errors.length ? "partial" : "full"), vscode.SymbolKind.Variable, s.range, assign.lhs?.range);
-                //             break;
-                //         case "declaration":
-                //             const decl = s.content as declaration;
-                //             addSymbol(decl.id?.image, "declaration - " + (decl.errors.length ? "partial" : "full"), vscode.SymbolKind.Variable, s.range, decl.id?.range);
-                //             break;
-                //     }
-                // });
+            hlFile.imports.forEach(i => addSymbol(i.file.label, i.file.path, vscode.SymbolKind.File, new vscode.Range(i.line - 1, i.column, i.line - 1, i.column + i.length)));
 
-            }
+            // if (parsed) {
+            // parsed.ast.statements.filter(s => s.content).forEach(s => {
+            //     switch (s.content?.type) {
+            //         case "assignment":
+            //             const assign = s.content as assignment;
+            //             addSymbol(assign.lhs?.id?.image, "assignment - " + (assign.errors.length ? "partial" : "full"), vscode.SymbolKind.Variable, s.range, assign.lhs?.range);
+            //             break;
+            //         case "declaration":
+            //             const decl = s.content as declaration;
+            //             addSymbol(decl.id?.image, "declaration - " + (decl.errors.length ? "partial" : "full"), vscode.SymbolKind.Variable, s.range, decl.id?.range);
+            //             break;
+            //     }
+            // });
+            // }
 
-            return retVal;
+            resolve(retVal);
         });
     }
 }

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-const yargs = require("yargs");
-import * as fs from "fs"
+import * as yargs from "yargs";
+import * as fs from "fs";
 import { parse } from "./hlcc/parser";
 
 const argv = yargs
@@ -15,7 +15,7 @@ const inFiles: string[] = argv._ || [];
 
 if (argv.syntax) {
     console.log(`Checking Syntax:  ${argv._}`);
-    fs.readFile(inFiles[0], 'utf8', (err, data) => {
+    fs.readFile(inFiles[0], "utf8", (err, data) => {
         if (err) {
             console.error(err.message);
         } else {
@@ -23,7 +23,7 @@ if (argv.syntax) {
     });
 } else {
     console.log(`Compiling:  ${argv._}`);
-    fs.readFile(inFiles[0], 'utf8', (err, data) => {
+    fs.readFile(inFiles[0], "utf8", (err, data) => {
         if (err) {
             console.error(err.message);
         } else {

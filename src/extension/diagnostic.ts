@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { HLError } from '../hlcc/errorListener';
+import { HLError } from "../hlcc/file";
 
 let eclDiagnosticCollection: vscode.DiagnosticCollection;
 

@@ -12,12 +12,10 @@ statement:
 	// | variableStatement
 	| importStatement
 	// | exportStatement
-	| emptyStatement
-	// | classDeclaration | expressionStatement | ifStatement | iterationStatement |
-	// continueStatement | breakStatement | returnStatement | yieldStatement | withStatement |
-	// labelledStatement | switchStatement | throwStatement | tryStatement | debuggerStatement |
-	// functionDeclaration
-	;
+	| emptyStatement;
+// | classDeclaration | expressionStatement | ifStatement | iterationStatement | continueStatement |
+// breakStatement | returnStatement | yieldStatement | withStatement | labelledStatement |
+// switchStatement | throwStatement | tryStatement | debuggerStatement | functionDeclaration;
 
 block: '{' statementList? '}';
 
@@ -111,4 +109,8 @@ fragment HexEscapeSequence: 'x' HexDigit HexDigit;
 
 fragment HexDigit: [_0-9a-fA-F];
 
-WhiteSpace: [ \n\t]+ -> skip;
+WhiteSpace: [ \t\r\n]+ -> skip;
+
+MultiLineComment: '/*' .*? '*/' -> channel(HIDDEN);
+
+SingleLineComment: '//' ~[\r\n]* -> channel(HIDDEN);
