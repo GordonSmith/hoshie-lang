@@ -6,7 +6,7 @@ import { ErrorListenerError } from "./errorListener";
 
 const posix = (windowsPath) => windowsPath.replace(/^\\\\\?\\/, "").replace(/\\/g, "\/").replace(/\/\/+/g, "\/");
 
-function decodeStringLiteral(str: string) {
+function removeQuotes(str: string) {
     return str.substring(1, str.length - 1);
 }
 
@@ -26,11 +26,18 @@ export interface ImportedHLFile extends Range {
     file: HLFile;
 }
 
+export class HLVariable {
+
+    constructor(id: string, rhs: any) {
+    }
+}
+
 export class HLFile extends HLVisitor {
 
     protected _parsed: ParseResponse;
 
     readonly imports: ImportedHLFile[] = [];
+    readonly variables: HLVariable[] = [];
 
     constructor(readonly label: string, readonly path: string, readonly text?: string) {
         super();
@@ -72,7 +79,7 @@ export class HLFile extends HLVisitor {
 
     visitImportFrom(ctx) {
         const [from, impStr] = ctx.children;
-        const str = decodeStringLiteral(impStr.symbol.text);
+        const str = removeQuotes(impStr.symbol.text);
         const importFilePath = posix(path.join(path.dirname(this.path), str + ".ho"));
         const importHLFile = new HLFile(str, importFilePath);
         this.imports.push({

@@ -4,9 +4,8 @@
     "description": "",
     "main": "./lib-umd/extension.js",
     "scripts": {
-        "install-os-deps": "wsl -u root -e apt install antlr python3-pip pipenv",
-        "install-pip-deps": "wsl -u root -e pip3 install -U jupyter-book pyppeteer myst-nb",
-        "install-deps": "run-s install-os-deps install-pip-deps",
+        "install-os-deps": "wsl -u root -e apt install antlr4",
+        "install-deps": "run-s install-os-deps",
         "clean": "rimraf ./src/hlcc/grammar ./lib-* ./build ./dist",
         "grammar-generate-ts": "antlr4ts -o ./src/hlcc/grammar -visitor ./grammar/HL.g4",
         "grammar-generate": "wsl -e antlr4 -Dlanguage=JavaScript -o ./src/hlcc -visitor ./grammar/HL.g4",

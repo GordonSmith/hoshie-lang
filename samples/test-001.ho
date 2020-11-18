@@ -1,5 +1,9 @@
 
 import {} from "./test-002";
+import * as XXX from "./test-002";
+import XXX from "./test-002";
+import { x, y, z} from "./test-002";
+import { x as t, y, z} from "./test-002";
 
 // skjdnckjsdncksjdcnjskjdnckjsdncksjdcnj 
 // kjsdkcjkskdjcjhsd skjdnckjsdncksjdcnj
