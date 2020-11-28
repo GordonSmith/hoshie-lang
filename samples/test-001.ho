@@ -1,10 +1,13 @@
+import { c } from "./test-002";
 
-import {} from "./test-002";
-import * as XXX from "./test-002";
-import XXX from "./test-002";
-import { x, y, z} from "./test-002";
-import { x as t, y, z} from "./test-002";
+d = c;
+e = 1 + 1;
+f = d + 1;
+f2 = d + 1 + d;
+g = [1,2,3,4,5,6,x];
+h = k;
 
 // skjdnckjsdncksjdcnjskjdnckjsdncksjdcnj 
 // kjsdkcjkskdjcjhsd skjdnckjsdncksjdcnj
 // kjskdjhcksjddhc skjdnckjsdncksjdcnj
+aaa;

@@ -1,5 +1,29 @@
 {
-    "ecl.launchConfiguration": "not found",
-    "ecl.targetCluster": {},
-    "python.dataScience.jupyterServerURI": "local"
+    "antlr4.format": {
+        "alignTrailingComments": true,
+        "allowShortBlocksOnASingleLine": true,
+        "breakBeforeBraces": false,
+        "columnLimit": 90,
+        "continuationIndentWidth": 4,
+        "indentWidth": 2,
+        "keepEmptyLinesAtTheStartOfBlocks": false,
+        "maxEmptyLinesToKeep": 1,
+        "reflowComments": false,
+        "spaceBeforeAssignmentOperators": true,
+        "tabWidth": 4,
+        "useTab": false,
+        "alignColons": "hanging",
+        "singleLineOverrulesHangingColon": true,
+        "allowShortRulesOnASingleLine": true,
+        "alignSemicolons": "hanging",
+        "breakBeforeParens": false,
+        "ruleInternalsOnSingleLine": false,
+        "minEmptyLines": 0,
+        "groupedAlignments": true,
+        "alignFirstTokens": false,
+        "alignLexerCommands": false,
+        "alignActions": false,
+        "alignLabels": true,
+        "alignTrailers": false
+    }
 }

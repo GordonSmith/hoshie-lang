@@ -3,6 +3,9 @@
     "name": "Hoshie",
     "patterns": [
         {
+            "include": "#control-statement"
+        },
+        {
             "include": "#entities"
         },
         {
@@ -16,6 +19,14 @@
         }
     ],
     "repository": {
+        "control-statement": {
+            "patterns": [
+                {
+                    "name": "keyword.control.flow.js",
+                    "match": "\\b(import|export)\\b"
+                }
+            ]
+        },
         "entities": {
             "patterns": [
                 {

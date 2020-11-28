@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { parse, ParseResponse } from "./parser";
-import { HLVisitor } from "./grammar/HLVisitor";
+import { HLParserVisitor } from "./grammar/HLParserVisitor";
 import { ErrorListenerError } from "./errorListener";
 
 const posix = (windowsPath) => windowsPath.replace(/^\\\\\?\\/, "").replace(/\\/g, "\/").replace(/\/\/+/g, "\/");
@@ -28,16 +28,22 @@ export interface ImportedHLFile extends Range {
 
 export class HLVariable {
 
-    constructor(id: string, rhs: any) {
+    constructor(readonly file: HLFile, readonly id: string, protected _rhs) {
+    }
+
+    check(): HLError | undefined {
+        return undefined;
     }
 }
 
-export class HLFile extends HLVisitor {
+export class HLFile extends HLParserVisitor {
 
     protected _parsed: ParseResponse;
+    private _errors: HLError[] = [];
 
     readonly imports: ImportedHLFile[] = [];
-    readonly variables: HLVariable[] = [];
+    readonly exports: { [id: string]: HLVariable } = {};
+    readonly variables: { [id: string]: HLVariable } = {};
 
     constructor(readonly label: string, readonly path: string, readonly text?: string) {
         super();
@@ -52,7 +58,7 @@ export class HLFile extends HLVisitor {
     }
 
     errors(): HLError[] {
-        return this._parsed.parseErrors.map(e => hlError(this.path, e));
+        return [...this._parsed.parseErrors.map(e => hlError(this.path, e)), ...this._errors];
     }
 
     allErrors(): HLError[] {
@@ -78,7 +84,7 @@ export class HLFile extends HLVisitor {
     }
 
     visitImportFrom(ctx) {
-        const [from, impStr] = ctx.children;
+        const [From, impStr] = ctx.children;
         const str = removeQuotes(impStr.symbol.text);
         const importFilePath = posix(path.join(path.dirname(this.path), str + ".ho"));
         const importHLFile = new HLFile(str, importFilePath);
@@ -89,5 +95,54 @@ export class HLFile extends HLVisitor {
             file: importHLFile
         });
         return super.visitImportFrom(ctx);
+    }
+
+    visitAdditiveExpression(ctx) {
+        const retVal = super.visitAdditiveExpression(ctx);
+        return retVal;
+    }
+
+    visitIdentifierExpression(ctx) {
+        const retVal = super.visitIdentifierExpression(ctx);
+        return retVal;
+    }
+
+    visitLiteralExpression(ctx) {
+        const retVal = super.visitLiteralExpression(ctx);
+        return retVal;
+    }
+
+    visitArrayLiteralExpression(ctx) {
+        const retVal = super.visitArrayLiteralExpression(ctx);
+        return retVal;
+    }
+
+    visitInitialiser(ctx) {
+        const retVal = super.visitInitialiser(ctx);
+        return retVal;
+    }
+
+    visitVariableDeclaration(ctx) {
+        const retVal = super.visitVariableDeclaration(ctx);
+        const [id, rhs] = ctx.children;
+        const hlVar = new HLVariable(this, id.symbol.text, rhs);
+        this.variables[hlVar.id] = hlVar;
+        const error = hlVar.check();
+        if (error) {
+            this._errors.push(error);
+        }
+        return hlVar;
+    }
+
+    visitVariableStatement(ctx) {
+        const [hlVar, eos] = super.visitVariableStatement(ctx);
+        return hlVar;
+    }
+
+    visitExportDeclaration(ctx) {
+        const retVal = super.visitExportDeclaration(ctx);
+        const [Export, hlVar] = retVal;
+        this.exports[hlVar.id] = hlVar;
+        return retVal;
     }
 }

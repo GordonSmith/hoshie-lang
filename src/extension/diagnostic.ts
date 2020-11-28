@@ -34,6 +34,7 @@ export class HLDiagnosticCollection {
             fileErrors[e.filePath].push(new vscode.Diagnostic(range, e.message, vscode.DiagnosticSeverity.Error));
         }
 
+        eclDiagnosticCollection.clear();
         for (const key in fileErrors) {
             const uri = vscode.Uri.file(key);
             eclDiagnosticCollection.set(uri, fileErrors[key]);

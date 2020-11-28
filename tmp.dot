@@ -1,0 +1,64 @@
+https://observablehq.com/@gordonsmith/church
+
+graph G {
+  edge [dir=none];
+  node [shape=box];
+  graph [splines=ortho];
+
+  "Samuel" [shape=box, regular=0, color="blue", style="filled" fillcolor="lightblue"] ;
+  "Henrietta" [shape=oval, regular=0, color="red", style="filled" fillcolor="pink"] ;
+  "James" [shape=box, regular=0, color="blue", style="filled" fillcolor="lightblue"] ;
+  "David" [shape=box, regular=0, color="blue", style="filled" fillcolor="lightblue"] ;
+  "Harry" [shape=box, regular=0, color="blue", style="filled" fillcolor="lightblue"] ;
+  "Edward Smith" [shape=box, regular=0, color="blue", style="filled" fillcolor="lightblue"] ;
+  "Grace" [shape=oval, regular=0, color="red", style="filled" fillcolor="pink"] ;
+  "Nadean Smith" [shape=oval, regular=0, color="red", style="filled" fillcolor="pink"] ;
+  "John Smith" [shape=box, regular=0, color="blue", style="filled" fillcolor="lightblue"] ;
+  "Brian Smith" [shape=box, regular=0, color="blue", style="filled" fillcolor="lightblue"] ;
+  "Caroline Church"  [shape=oval, regular=0, color="red", style="filled" fillcolor="pink"] ;
+  "Beatrice Church"  [shape=oval, regular=0, color="red", style="filled" fillcolor="pink"] ;
+
+  s1 [shape=diamond,label="",height=0.25,width=0.25];
+  {rank=same; "Samuel" -- s1 -- Henrietta };
+  s1 -- David
+  s1 -- James
+
+  j1 [shape=diamond,label="",height=0.25,width=0.25];
+  {rank=same; James -- j1 };
+  j1 -- Harry
+
+  d1 [shape=diamond,label="",height=0.25,width=0.25];
+  {rank=same; David -- d1 };
+  d1 -- "Caroline Church" 
+  d1 -- "Beatrice Church" 
+
+  h1 [shape=diamond,label="",height=0.25,width=0.25];
+  {rank=same; Harry -- h1 };
+  h1 -- Grace
+
+  g1 [shape=diamond,label="",height=0.25,width=0.25];
+  {rank=same; "Edward Smith" -- g1 -- Grace };
+  g1 -- "Brian Smith"
+  g1 -- "John Smith"
+  g1 -- "Nadean Smith"
+
+  "Generation 1" [style=invis];
+  "Generation 2" [style=invis];
+  "Generation 3" [style=invis];
+  "Generation 4" [style=invis];
+  "Generation 5" [style=invis];
+  "Generation 6" [style=invis];
+  "Generation 1" -- "Generation 2" -- "Generation 3" -- "Generation 4" -- "Generation 5" -- "Generation 6"  [style=invis];
+
+  "Rebecca Greenhill"  [shape=oval, regular=0, color="red", style="filled" fillcolor="pink"] ;
+
+  s1 -- "Rebecca Greenhill" [style=dashed]
+  j1 -- "Nadean Smith" [style=dashed]
+
+  {rank = same; "Generation 1"; Samuel; Henrietta}
+  {rank = same; "Generation 2"; }
+  {rank = same; "Generation 3"; }
+  {rank = same; "Generation 4"; }
+  {rank = same; "Generation 5"; }
+  {rank = same; "Generation 6"; "Rebecca Greenhill";}
+}

@@ -4,5 +4,4 @@ grammar/.antlr
 grammar/*.txt
 lib-*/
 node_modules/
-src/hlcc/grammar
 package-lock.json

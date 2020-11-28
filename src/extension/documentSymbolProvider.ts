@@ -9,12 +9,12 @@ export let documentSymbolProvider: HLDocumentSymbolProvider;
 export class HLDocumentSymbolProvider implements vscode.DocumentSymbolProvider {
     protected _ctx: vscode.ExtensionContext;
 
-    protected _Diagnostic: HLDiagnosticCollection;
+    protected _diagnostic: HLDiagnosticCollection;
 
     private constructor(ctx: vscode.ExtensionContext) {
         this._ctx = ctx;
         ctx.subscriptions.push(vscode.languages.registerDocumentSymbolProvider("hoshie", this));
-        this._Diagnostic = HLDiagnosticCollection.attach(ctx);
+        this._diagnostic = HLDiagnosticCollection.attach(ctx);
     }
 
     static attach(ctx: vscode.ExtensionContext): HLDocumentSymbolProvider {
@@ -27,7 +27,7 @@ export class HLDocumentSymbolProvider implements vscode.DocumentSymbolProvider {
     provideDocumentSymbols(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.ProviderResult<vscode.SymbolInformation[] | vscode.DocumentSymbol[]> {
         return new Promise((resolve, reject) => {
             const hlFile = new HLFile("", document.fileName, document.getText());
-            this._Diagnostic.set(hlFile.allErrors());
+            this._diagnostic.set(hlFile.allErrors());
 
             const retVal: vscode.DocumentSymbol[] = [];
 
