@@ -6,15 +6,16 @@ options {
   tokenVocab = HLLexer;
 }
 
-program: sourceElements? EOF;
+program: fileElements? EOF;
 
-sourceElements: sourceElement+;
+fileElements: fileElement+;
 
-sourceElement: statement;
+fileElement: fileStatement;
 
-statement
+fileStatement
   : block
   | variableStatement
+  | actionStatement
   | importStatement
   | exportStatement
   | emptyStatement
@@ -24,9 +25,21 @@ statement
 
 block: '{' statementList? '}';
 
-statementList: statement+;
+blockStatement
+  : block
+  | variableStatement
+  | actionStatement
+  | emptyStatement
+  ;
+
+statementList: blockStatement+;
 
 variableStatement: variableDeclaration eos;
+
+actionStatement
+  : Identifier eos                      # InlineAction
+  | Assert '(' singleExpression ')' eos # FunctionAction
+  ;
 
 variableDeclaration: Identifier initialiser;
 
@@ -34,14 +47,9 @@ initialiser: '=' singleExpression;
 
 importStatement: 'import' importFromBlock;
 
-importFromBlock
-  : moduleItems importFrom eos
-  | StringLiteral eos
-  ;
+importFromBlock: moduleItems importFrom eos;
 
 moduleItems: '{' (aliasName ',')* (aliasName ','?)? '}';
-
-importDefault: aliasName ',';
 
 importNamespace
   : ('*' | identifierName) (As identifierName)?
@@ -49,10 +57,12 @@ importNamespace
 
 importFrom: From StringLiteral;
 
-aliasName: identifierName ( As identifierName)?;
+aliasName
+  : identifierName (As identifierName)? # ImportDeclaration
+  ;
 
 exportStatement
-  : Export (exportFromBlock | variableStatement) eos # ExportDeclaration
+  : Export (exportFromBlock | variableDeclaration) eos # ExportDeclaration
   ;
 
 exportFromBlock
@@ -70,9 +80,9 @@ keyword: String;
 
 emptyStatement: ';';
 
-arrayLiteral: ('[' elementList ']');
+elementList: singleExpression (','+ singleExpression)*;
 
-elementList
+optionalElementList
   : ','* singleExpression? (','+ singleExpression)* ','* // Yes, everything is optional
   ;
 
@@ -81,24 +91,49 @@ expressionSequence
   ;
 
 singleExpression
-  : '!' singleExpression                                # NotExpression
-  | singleExpression ('*' | '/' | '%') singleExpression # MultiplicativeExpression
-  | singleExpression ('+' | '-') singleExpression       # AdditiveExpression
-  | identifier                                          # IdentifierExpression
-  | literal                                             # LiteralExpression
-  | arrayLiteral                                        # ArrayLiteralExpression
+  : '!' singleExpression                                        # NotExpression
+  | singleExpression ('*' | '/' | '%') singleExpression         # MultiplicativeExpression
+  | singleExpression ('+' | '-') singleExpression               # AdditiveExpression
+  | singleExpression ('<' | '>' | '<=' | '>=') singleExpression # RelationalExpression
+  | singleExpression ('==' | '!=') singleExpression             # EqualityExpression
+  | singleExpression ('&&' | '||') singleExpression             # LogicalExpression
+  | identifier                                                  # IdentifierExpression
+  | literal                                                     # LiteralExpression
+  | arrayLiteral                                                # ArrayLiteralExpression
+  | Length '(' singleExpression ')'                             # LengthFunction
+  | arrowFunctionParameters '=>' arrowFunctionBody              # ArrowFunction
   ;
 
 literal
-  : (NullLiteral | BooleanLiteral | StringLiteral)
-  | numericLiteral
+  : BooleanLiteral # BooleanLiteralExpression
+  | DecimalLiteral # NumberLiteralExpression
+  | StringLiteral  # StringLiteralExpression
   ;
 
-numericLiteral
-  : DecimalLiteral
-  | HexIntegerLiteral
-  | OctalIntegerLiteral
+arrayLiteral: ('[' ']' | '[' elementList ']');
+
+arrowFunctionParameters: '(' formalParameterList? ')';
+
+arrowFunctionBody
+  : singleExpression
+  | '{' functionBody '}'
   ;
+
+formalParameterList
+  : formalParameterArg (',' formalParameterArg)*
+  ;
+
+formalParameterArg
+  : paramaterType identifier ('=' singleExpression)? // ECMAScript 6: Initialization
+  ;
+
+paramaterType
+  : Boolean ('[' ']')?
+  | Number ('[' ']')?
+  | String ('[' ']')?
+  ;
+
+functionBody: fileElement* Return singleExpression eos;
 
 eos: ';' | EOF;
 

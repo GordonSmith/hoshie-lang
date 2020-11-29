@@ -1,0 +1,25 @@
+export concat = (string a = "22", string b) => a + b;
+export subtract = (number a = 10, number b = 5) => a - b;
+export someFunc3 = () => 5 > 10;
+export someFunc0 = () => { 
+    return false;
+};
+export someFunc1 = () => { 
+    x = 15 > 10;
+    return x;
+};
+export someFunc2 = () => { 
+    x = 5 > 10;
+    y = 5 > 10;
+    z = 5 > 10;
+    someError = a + b;
+    return x && y && z;
+};
+
+export someFunc4 = (number c) => c >= 1000000;
+export someFunc5 = (number c) => {
+    return c >= 1000000;
+};
+export arrLength = (number[] c) => {
+    return length(c);
+};

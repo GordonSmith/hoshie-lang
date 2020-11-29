@@ -17,27 +17,33 @@ Divide: '/';
 Modulus: '%';
 Plus: '+';
 Minus: '-';
+LessThan: '<';
+GraterThan: '>';
+LessThanEquals: '<=';
+GreaterThanEquals: '>=';
+Equals: '==';
+NotEquals: '!=';
+And: '&&';
+Or: '||';
+Arrow: '=>';
 
+//  Keywords
 Export: 'export';
 Import: 'import';
+As: 'as';
+From: 'from';
+Assert: 'assert';
+Length: 'length';
 String: 'string';
 Boolean: 'boolean';
 Number: 'number';
-As: 'as';
-From: 'from';
-
-Identifier: IdentifierStart IdentifierPart*;
-
-StringLiteral
-  : (
-    '"' DoubleStringCharacter* '"'
-    | '\'' SingleStringCharacter* '\''
-  )
-  ;
+Return: 'return';
 
 NullLiteral: 'null';
 
 BooleanLiteral: 'true' | 'false';
+
+Identifier: IdentifierStart IdentifierPart*;
 
 DecimalLiteral
   : DecimalIntegerLiteral '.' DecimalDigit* ExponentPart?
@@ -58,6 +64,13 @@ fragment OctalDigit: [0-7];
 fragment DecimalIntegerLiteral: '0' | [1-9] DecimalDigit*;
 
 fragment ExponentPart: [eE] [+-]? DecimalDigit+;
+
+StringLiteral
+  : (
+    '"' DoubleStringCharacter* '"'
+    | '\'' SingleStringCharacter* '\''
+  )
+  ;
 
 fragment IdentifierPart
   : IdentifierStart

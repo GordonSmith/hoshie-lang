@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { HLError } from "../hlcc/file";
+import { HLError } from "../hlcc/ast/node";
 
 let eclDiagnosticCollection: vscode.DiagnosticCollection;
 
@@ -20,8 +20,9 @@ export class HLDiagnosticCollection {
         return diagnostic;
     }
 
-    async set(errors: HLError[]) {
+    async set(filePath: string, errors: HLError[]) {
         const fileErrors = {};
+        fileErrors[filePath] = [];
 
         for (const e of errors) {
             if (!fileErrors[e.filePath]) {
@@ -30,11 +31,15 @@ export class HLDiagnosticCollection {
             const uri = vscode.Uri.file(e.filePath);
             const document = await vscode.workspace.openTextDocument(uri);
             const pos = new vscode.Position(e.line - 1, e.column);
-            const range = document.getWordRangeAtPosition(pos) ?? new vscode.Range(pos, pos);
+            let charPos = e.column + e.length;
+            if (charPos < 0) {
+                charPos = 0;
+            }
+            const toPos = new vscode.Position(e.line - 1, charPos);
+            const range = new vscode.Range(pos, toPos);//document.getWordRangeAtPosition(pos) ?? new vscode.Range(pos, pos);
             fileErrors[e.filePath].push(new vscode.Diagnostic(range, e.message, vscode.DiagnosticSeverity.Error));
         }
 
-        eclDiagnosticCollection.clear();
         for (const key in fileErrors) {
             const uri = vscode.Uri.file(key);
             eclDiagnosticCollection.set(uri, fileErrors[key]);

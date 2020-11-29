@@ -1,10 +1,10 @@
 import * as vscode from "vscode";
-import { HLFile } from "../hlcc/file";
+import { HLFileScope } from "../hlcc/ast/fileScope";
 import { HLDiagnosticCollection } from "./diagnostic";
 import { activeHoshieDocument } from "./util";
 
-export let commands: Commands;
-export class Commands {
+export let commands: HLCommands;
+export class HLCommands {
 
     _ctx: vscode.ExtensionContext;
     protected _diagnostic: HLDiagnosticCollection;
@@ -15,9 +15,9 @@ export class Commands {
         ctx.subscriptions.push(vscode.commands.registerCommand("ho.checkSyntax", () => this.checkSyntax()));
     }
 
-    static attach(ctx: vscode.ExtensionContext): Commands {
+    static attach(ctx: vscode.ExtensionContext): HLCommands {
         if (!commands) {
-            commands = new Commands(ctx);
+            commands = new HLCommands(ctx);
         }
         return commands;
     }
@@ -25,8 +25,8 @@ export class Commands {
     checkSyntax() {
         const document = activeHoshieDocument();
         if (document) {
-            const hlFile = new HLFile(document.getText(), document.fileName, document.getText());
-            this._diagnostic.set(hlFile.allErrors());
+            const hlFile = new HLFileScope(document.getText(), document.fileName, document.getText());
+            this._diagnostic.set(document.fileName, hlFile.allErrors());
         }
     }
 }

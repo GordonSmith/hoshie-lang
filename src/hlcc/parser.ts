@@ -1,5 +1,5 @@
 import * as antlr4 from "antlr4";
-import { ErrorListenerError, ErrorListener } from "./errorListener";
+import { ErrorListenerError, HLErrorListener } from "./errorListener";
 import { HLLexer } from "./grammar/HLLexer";
 import { HLParser } from "./grammar/HLParser";
 
@@ -19,21 +19,21 @@ export interface ParseResponse {
 export function parse(text: string): ParseResponse {
     const chars = new antlr4.InputStream(text);
 
-    const lexer = new HLLexer(chars);
-    (lexer as any).removeErrorListeners();
-    const lexerErrorListener = new ErrorListener();
-    (lexer as any).addErrorListener(lexerErrorListener);
+    const lexer = new HLLexer(chars) as unknown as antlr4.Lexer;
+    lexer.removeErrorListeners();
+    const lexerErrorListener = new HLErrorListener();
+    lexer.addErrorListener(lexerErrorListener);
 
     const tokens = new antlr4.CommonTokenStream(lexer);
-    const parser: any = new HLParser(tokens);
+    const parser = new HLParser(tokens) as unknown as antlr4.Parser;
     parser.removeErrorListeners();
-    const parserErrorListener = new ErrorListener();
+    const parserErrorListener = new HLErrorListener();
     parser.addErrorListener(parserErrorListener);
 
     parser.buildParseTrees = true;
 
     try {
-        const tree = parser.program();
+        const tree = (parser as any).program();
         return {
             full: true,
             tree,

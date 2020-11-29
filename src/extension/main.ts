@@ -1,11 +1,13 @@
 import * as vscode from "vscode";
-import { Commands } from "./command";
+import { HLCommands } from "./commands";
 import { HLDiagnosticCollection } from "./diagnostic";
+import { HLHoverProvider } from "./hoverProvider";
 import { HLDocumentSymbolProvider } from "./documentSymbolProvider";
 
 export function hlActivate(ctx: vscode.ExtensionContext): void {
-    Commands.attach(ctx);
+    HLCommands.attach(ctx);
     HLDiagnosticCollection.attach(ctx);
+    HLHoverProvider.attach(ctx);
     HLDocumentSymbolProvider.attach(ctx);
 }
 

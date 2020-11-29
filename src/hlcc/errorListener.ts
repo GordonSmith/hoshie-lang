@@ -1,14 +1,16 @@
-import { error } from "antlr4";
+// @ts-ignore
+import { ErrorListener } from "antlr4/error";
 import { HLLexer } from "./grammar/HLLexer";
 
 export interface ErrorListenerError {
     source: string;
     line: number;
     column: number;
+    length: number;
     message: string;
 }
 
-export class ErrorListener extends error.ErrorListener {
+export class HLErrorListener extends ErrorListener {
 
     errors: ErrorListenerError[] = [];
 
@@ -20,6 +22,7 @@ export class ErrorListener extends error.ErrorListener {
         this.errors.push({
             source: "ErrorListener",
             line,
+            length: offendingSymbol.stop - offendingSymbol.start,
             column,
             message: msg
         });
