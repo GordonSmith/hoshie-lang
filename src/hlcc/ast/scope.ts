@@ -1,7 +1,7 @@
 import { HLError, HLNode, removeQuotes } from "./node";
 import { Declaration, HLDeclaration } from "./declaration";
 import { AdditiveExpression, ArrayExpression, BooleanExpression, EqualityExpression, IdentifierExpression, LogicalExpression, MultiplicativeExpression, NotExpression, NumericExpression, RelationalExpression, StringExpression, isRHS } from "./expression";
-import { InlineAction } from "./action";
+import { HLAction, InlineAction, Test } from "./action";
 import { LengthFunction, ArrowParamater, ArrowBody } from "./function";
 import { HLParserVisitor } from "../grammar/HLParserVisitor";
 
@@ -14,6 +14,8 @@ export interface Range {
 export class HLScope extends HLParserVisitor {
 
     private _errors: HLError[] = [];
+    private _actions: HLAction[] = [];
+    private _tests: Test[] = [];
 
     readonly declarations: { [id: string]: HLDeclaration } = {};
 
@@ -71,6 +73,14 @@ export class HLScope extends HLParserVisitor {
             ...this.declarationErrors(),
             ...this._errors
         ];
+    }
+
+    actions(): HLAction[] {
+        return this._actions;
+    }
+
+    tests(): Test[] {
+        return this._tests;
     }
 
     resolve(id: string): HLDeclaration | undefined {
@@ -164,7 +174,8 @@ export class HLScope extends HLParserVisitor {
     }
 
     visitLiteralExpression(ctx) {
-        const [retVal] = super.visitLiteralExpression(ctx);
+        const children = super.visitLiteralExpression(ctx);
+        const [retVal] = children;
         return retVal;
     }
 
@@ -219,6 +230,18 @@ export class HLScope extends HLParserVisitor {
     }
 
     visitInlineAction(ctx) {
-        return new InlineAction(ctx, this, ctx.Identifier().getText());
+        const children = super.visitInlineAction(ctx);
+        const [retVal, _] = children;
+        this._actions.push(retVal);
+        return retVal;
+    }
+
+    visitUnitTest(ctx) {
+        const [_0, _1, _2, _3, _4, _5, msg] = ctx.children;
+        const children = super.visitUnitTest(ctx);
+        const [__0, __1, actual, __3, expected] = children;
+        const test = new Test(ctx, this, actual, expected, msg?.getText());
+        this._tests.push(test);
+        return test;
     }
 }

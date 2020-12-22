@@ -7,6 +7,8 @@ export interface ErrorListenerError {
     line: number;
     column: number;
     length: number;
+    severity?: string;
+    code?: number;
     message: string;
 }
 
@@ -14,7 +16,7 @@ export class HLErrorListener extends ErrorListener {
 
     errors: ErrorListenerError[] = [];
 
-    constructor(readonly logging = true) {
+    constructor(readonly logging = false) {
         super();
     }
 

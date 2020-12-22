@@ -10,15 +10,15 @@ export someFunc1 = () => {
 };
 export someFunc2 = () => { 
     x = 5 > 10;
-    y = 5 > 10;
+    export y = 5 > 10; //  TODO - Should be error ---
     z = 5 > 10;
     someError = a + b;
     return x && y && z;
 };
 
 export someFunc4 = (number c) => c >= 1000000;
-export someFunc5 = (number c) => {
-    return c >= 1000000;
+export someFunc5 = (number c = 11) => {
+    return c >= 10;
 };
 export arrLength = (number[] c) => {
     return length(c);

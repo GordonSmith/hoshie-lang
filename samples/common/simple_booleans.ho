@@ -1,3 +1,14 @@
-export bool1 = true;
-export bool2 = !bool1;
-export boolArr = [true, bool1, bool2, true];
+export true1 = true;
+export false1 = false;
+export boolArr = [true, true1, false1, true];
+
+utest(true, !false);
+utest(!true, false);
+utest(!!!!!true, !!!!!!false, "Lots of nots");
+
+utest(true1, true);
+utest(false1, false);
+utest(false1, !true1);
+
+utest(true1, !false1);
+utest(true1, !!true1);

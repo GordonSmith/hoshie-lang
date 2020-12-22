@@ -34,12 +34,14 @@ blockStatement
 
 statementList: blockStatement+;
 
-variableStatement: variableDeclaration eos;
-
 actionStatement
-  : Identifier eos                      # InlineAction
-  | Assert '(' singleExpression ')' eos # FunctionAction
+  : singleExpression eos # InlineAction
+  | UTest '(' singleExpression ',' singleExpression (
+    ',' StringLiteral
+  )? ')' eos # UnitTest
   ;
+
+variableStatement: variableDeclaration eos;
 
 variableDeclaration: Identifier initialiser;
 

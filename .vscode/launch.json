@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "hlcc",
+            "name": "hlcc check",
             "type": "node",
             "request": "launch",
             "skipFiles": [
@@ -13,7 +13,40 @@
             ],
             "program": "${workspaceFolder}/lib-umd/index.js",
             "args": [
-                "./sample/helloWorld.ho"
+                "check",
+                "./samples/test-basic-001.ho"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/lib-umd/**/*.js"
+            ]
+        },
+        {
+            "name": "hlcc run",
+            "type": "node",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/lib-umd/index.js",
+            "args": [
+                "run",
+                "./samples/test-basic-001.ho"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/lib-umd/**/*.js"
+            ]
+        },
+        {
+            "name": "hlcc test",
+            "type": "node",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/lib-umd/index.js",
+            "args": [
+                "test",
+                "./samples/test-basic-001.ho"
             ],
             "outFiles": [
                 "${workspaceFolder}/lib-umd/**/*.js"

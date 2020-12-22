@@ -1,3 +1,4 @@
+import {  } from "./common/simple_booleans";
 import { num1 as numA, num2, numArr } from "./common/simple_numerics";
 import { str1 as strA, str2 } from "./common/simple_strings";
 import { subtract, someFunc2 } from "./common/simple_functions";
@@ -20,14 +21,21 @@ isFalse2 = "Smith" <= "Jones";
 isVeryTrue = isTrue == isTrue;
 isVeryFalse = isTrue != isTrue;
 
-assert(isTrue == isTrue2);
+// assert(isTrue == isTrue2);
 len = length(numArr);
 
 longStr = strA + " and " + str2;
 len2 = length(longStr);
 
-funcResult = subtract(7,5);
+utest(little + len, 15, "Test 001");
+utest(true, !false, "Test 001");
 
-funcResult2 = someFunc2();
-
+"--- --- ---";
 little;
+len;
+little + len;
+"--- --- ---";
+
+funcResult = subtract(7,5); //  TODO - Should not be error  ---
+funcResult2 = someFunc2();  //  TODO - Should not be error  ---
+

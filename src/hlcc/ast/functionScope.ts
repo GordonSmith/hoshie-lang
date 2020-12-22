@@ -13,9 +13,9 @@ export class HLFunctionScope extends HLScope implements RHS {
         return this._body?.returnExpression?.type;
     }
 
-    constructor(readonly path: string, ctx) {
+    constructor(readonly path: string, readonly ctx) {
         super("", path);
-        this.visitArrowFunction(ctx);
+        this.visitArrowFunction(this.ctx);
     }
 
     eval(): ExpresionT {

@@ -5,6 +5,7 @@ import { hlError, HLError, removeQuotes } from "./node";
 import { Alias, HLDeclaration } from "./declaration";
 import { HLScope, Range } from "./scope";
 import { HLFunctionScope } from "./functionScope";
+import { HLAction, Test } from "./action";
 
 const posix = (windowsPath) => windowsPath.replace(/^\\\\\?\\/, "").replace(/\\/g, "\/").replace(/\/\/+/g, "\/");
 
@@ -27,14 +28,14 @@ export class HLFileScope extends HLScope {
 
         this._parsed = parse(text);
         if (this._parsed.full) {
-            //try {
-            this.visitProgram(this._parsed.tree);
-            // } catch (e) {
-            //     if (!this._parsed.lexErrors.length && !this._parsed.parseErrors.length) {
-            //         //  Unexpected visitor error...
-            //         console.error(e);
-            //     }
-            // }
+            try {
+                this.visitProgram(this._parsed.tree);
+            } catch (e) {
+                if (!this._parsed.lexErrors.length && !this._parsed.parseErrors.length) {
+                    //  Unexpected visitor error...
+                    console.error(e);
+                }
+            }
         }
     }
 
@@ -50,6 +51,22 @@ export class HLFileScope extends HLScope {
         let retVal = this.errors();
         this.importedFiles.forEach(i => {
             retVal = retVal.concat(i.file.allErrors());
+        });
+        return retVal;
+    }
+
+    allActions(): HLAction[] {
+        let retVal = this.actions();
+        this.importedFiles.forEach(i => {
+            retVal = retVal.concat(i.file.allActions());
+        });
+        return retVal;
+    }
+
+    allTests(): Test[] {
+        let retVal = this.tests();
+        this.importedFiles.forEach(i => {
+            retVal = retVal.concat(i.file.allTests());
         });
         return retVal;
     }

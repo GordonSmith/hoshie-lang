@@ -1,2 +1,5 @@
-
-pipe({string fname, string lname, int age, string gender}) = [sense(age)->min, filter(age)->isold , sense(age)->min]
+xxx = "Hello";
+yyy = xxx;
+xxx;
+yyy+"!";
+"---";

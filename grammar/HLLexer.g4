@@ -32,7 +32,7 @@ Export: 'export';
 Import: 'import';
 As: 'as';
 From: 'from';
-Assert: 'assert';
+UTest: 'utest';
 Length: 'length';
 String: 'string';
 Boolean: 'boolean';

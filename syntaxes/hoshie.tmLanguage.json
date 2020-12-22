@@ -83,8 +83,8 @@
                     "match": "\\b(length)\\b"
                 },
                 {
-                    "name": "support.other.hoshie",
-                    "match": "\\b(assert)\\b"
+                    "name": "support.function.hoshie",
+                    "match": "\\b(utest)\\b"
                 }
             ]
         },

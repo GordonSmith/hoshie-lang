@@ -11,7 +11,7 @@ export function isRHS(_: any): _ is RHS {
     return (_ as RHS)?.type !== undefined && (_ as RHS)?.eval !== undefined;
 }
 
-class HLExpression extends HLNode implements RHS {
+export class HLExpression extends HLNode implements RHS {
 
     get type(): ExpresionType {
         debugger;
@@ -119,7 +119,7 @@ export class RelationalExpression extends HLExpression {
                 case "<=":
                     return lhs <= rhs;
                 case ">=":
-                    return lhs < rhs;
+                    return lhs >= rhs;
             }
         } else if (typeof lhs === "string" && typeof rhs === "string") {
             switch (this.action) {
