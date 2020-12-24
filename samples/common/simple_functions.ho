@@ -12,7 +12,6 @@ export someFunc2 = () => {
     x = 5 > 10;
     export y = 5 > 10; //  TODO - Should be error ---
     z = 5 > 10;
-    someError = a + b;
     return x && y && z;
 };
 

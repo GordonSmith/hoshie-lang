@@ -76,6 +76,8 @@ export class HLFileScope extends HLScope {
     visitImportStatement(ctx) {
         const [, importForm] = super.visitImportStatement(ctx);
         const [decls, file]: [{ identifier: string, as: string, ctx }[], HLFileScope] = importForm;
+        decls.shift();
+        decls.pop();
         decls?.forEach(row => {
             const decl = file.exports[row.identifier];
             if (decl) {

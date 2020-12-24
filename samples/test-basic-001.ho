@@ -38,4 +38,6 @@ little + len;
 
 funcResult = subtract(7,5); //  TODO - Should not be error  ---
 funcResult2 = someFunc2();  //  TODO - Should not be error  ---
+subtract(7,5); //  TODO - Should not be error  ---
+someFunc2();  //  TODO - Should not be error  ---
 

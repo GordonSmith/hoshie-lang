@@ -1,6 +1,6 @@
 import { HLError, HLNode, removeQuotes } from "./node";
 import { Declaration, HLDeclaration } from "./declaration";
-import { AdditiveExpression, ArrayExpression, BooleanExpression, EqualityExpression, IdentifierExpression, LogicalExpression, MultiplicativeExpression, NotExpression, NumericExpression, RelationalExpression, StringExpression, isRHS } from "./expression";
+import { AdditiveExpression, ArrayExpression, BooleanExpression, EqualityExpression, IdentifierExpression, LogicalExpression, MultiplicativeExpression, NotExpression, NumericExpression, RelationalExpression, StringExpression, isRHS, FunctionExpression, HLExpression } from "./expression";
 import { HLAction, InlineAction, Test } from "./action";
 import { LengthFunction, ArrowParamater, ArrowBody } from "./function";
 import { HLParserVisitor } from "../grammar/HLParserVisitor";
@@ -63,7 +63,9 @@ export class HLScope extends HLParserVisitor {
     declarationErrors(): HLError[] {
         let retVal: HLError[] = [];
         for (const key in this.declarations) {
-            retVal = [...retVal, ...this.declarations[key]?.expression?.errors()];
+            if (this.declarations[key]?.expression?.errors) {
+                retVal = [...retVal, ...this.declarations[key]?.expression?.errors()];
+            }
         }
         return retVal;
     }
@@ -98,12 +100,53 @@ export class HLScope extends HLParserVisitor {
 
     //  Visitor overrides  ---
 
+    visitTerminal(ctx) {
+        return ctx.symbol.text;
+    }
+
     visitProgram(ctx) {
         return super.visitProgram(ctx);
     }
 
     visitBlock(ctx) {
         return super.visitBlock(ctx);
+    }
+
+    visitArguments(ctx) {
+        const children = super.visitArguments(ctx);
+        const args = [];
+        let argPos = 0;
+        let arg = undefined;
+        children.forEach(item => {
+            switch (item) {
+                case "[":
+                case "]":
+                    break;
+                case ",":
+                    args.push(arg);
+                    argPos++;
+                    arg = undefined;
+                    break;
+                default:
+                    if (Array.isArray(item)) {
+                        arg = item[0];
+                    }
+            }
+        });
+        if (children.length > 2) {
+            args.push(arg);
+        }
+        return args;
+    }
+
+    visitFunctionExpression(ctx) {
+        const children = super.visitFunctionExpression(ctx);
+        const [identifier, args] = children;
+        const decl = this.resolve(identifier.id);
+        if (decl.type !== "function") {
+            this.appendError(decl, `${identifier.id} is not a function.`);
+        }
+        return new FunctionExpression(ctx, this, decl.expression as any, args);
     }
 
     visitNotExpression(ctx) {
@@ -182,7 +225,7 @@ export class HLScope extends HLParserVisitor {
     visitArrayLiteralExpression(ctx) {
         const [Arrayliteral] = super.visitArrayLiteralExpression(ctx);
         const [, literalItems] = Arrayliteral;
-        const literals = literalItems?.filter(item => !!item) || [];
+        const literals = literalItems?.filter(item => item !== ",") || [];
         literals.forEach(item => {
             if (item.type !== literals[0].type) {
                 this.appendError(item, `All items must be type of "${literals[0].type}"`);

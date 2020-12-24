@@ -14,7 +14,7 @@
             "program": "${workspaceFolder}/lib-umd/index.js",
             "args": [
                 "check",
-                "./samples/test-basic-001.ho"
+                "./samples/tests/index.ho"
             ],
             "outFiles": [
                 "${workspaceFolder}/lib-umd/**/*.js"
@@ -30,7 +30,7 @@
             "program": "${workspaceFolder}/lib-umd/index.js",
             "args": [
                 "run",
-                "./samples/test-basic-001.ho"
+                "./samples/tests/index.ho"
             ],
             "outFiles": [
                 "${workspaceFolder}/lib-umd/**/*.js"
@@ -46,7 +46,7 @@
             "program": "${workspaceFolder}/lib-umd/index.js",
             "args": [
                 "test",
-                "./samples/test-basic-001.ho"
+                "./samples/tests/index.ho"
             ],
             "outFiles": [
                 "${workspaceFolder}/lib-umd/**/*.js"

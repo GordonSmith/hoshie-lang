@@ -1,5 +1,6 @@
 import { HLScope } from "./scope";
 import { ExpresionT, ExpresionType, HLError, HLNode } from "./node";
+import { HLFunctionScope } from "./functionScope";
 
 export interface RHS {
     type: ExpresionType;
@@ -14,7 +15,6 @@ export function isRHS(_: any): _ is RHS {
 export class HLExpression extends HLNode implements RHS {
 
     get type(): ExpresionType {
-        debugger;
         return undefined;
     }
 
@@ -23,7 +23,6 @@ export class HLExpression extends HLNode implements RHS {
     }
 
     eval(): ExpresionT {
-        debugger;
         return undefined;
     }
 
@@ -254,5 +253,20 @@ export class ArrayExpression extends HLExpression {
             return (this.value as any[]).map(v => `'${v.eval()}'`);
         }
         return (this.value as any[]).map(v => v.eval());
+    }
+}
+
+export class FunctionExpression extends HLExpression {
+
+    get type(): ExpresionType {
+        return this.func.returnType;
+    }
+
+    constructor(ctx: any, file: HLScope, readonly func: HLFunctionScope, readonly args: HLExpression[]) {
+        super(ctx, file);
+    }
+
+    eval() {
+        return this.func.calc(this.args);
     }
 }

@@ -1,0 +1,56 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "hlcc check",
+            "type": "node",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/../lib-umd/index.js",
+            "args": [
+                "check",
+                "./test-basic-001.ho"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/lib-umd/**/*.js"
+            ]
+        },
+        {
+            "name": "hlcc run",
+            "type": "node",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/../lib-umd/index.js",
+            "args": [
+                "run",
+                "./test-basic-001.ho"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/lib-umd/**/*.js"
+            ]
+        },
+        {
+            "name": "hlcc test",
+            "type": "node",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/../lib-umd/index.js",
+            "args": [
+                "test",
+                "./test-basic-001.ho"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/lib-umd/**/*.js"
+            ]
+        }
+    ]
+}

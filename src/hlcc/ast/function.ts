@@ -45,16 +45,27 @@ export class LengthFunction extends HLFunction {
 
 export class ArrowParamater extends HLNode implements RHS {
 
+    private _defaultExpression?: RHS;
+
     get type(): ExpresionType {
         return this._type;
     }
 
-    constructor(ctx: any, readonly file: HLScope, readonly _type: ExpresionType, readonly id: string, readonly defaultExpression?: RHS) {
+    constructor(ctx: any, readonly file: HLScope, readonly _type: ExpresionType, readonly id: string, defaultExpression?: RHS) {
         super(ctx);
+        this._defaultExpression = defaultExpression;
+    }
+
+    defaultExpression(): RHS | undefined;
+    defaultExpression(_: RHS | undefined): this;
+    defaultExpression(_?: RHS | undefined): this | RHS | undefined {
+        if (!arguments.length) return this._defaultExpression;
+        this._defaultExpression = _;
+        return this;
     }
 
     eval(): ExpresionT {
-        return this.defaultExpression?.eval();
+        return this.defaultExpression()?.eval();
     }
 
     errors(): HLError[] {

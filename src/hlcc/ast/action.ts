@@ -30,17 +30,17 @@ export class InlineAction extends HLAction {
 
 export class Test extends HLAction {
 
-    constructor(ctx: any, readonly file: HLScope, readonly expected: HLExpression, readonly actual: HLExpression, readonly message?: string) {
+    constructor(ctx: any, readonly file: HLScope, readonly actual: HLExpression, readonly expected: HLExpression, readonly message?: string) {
         super(ctx);
-        this.message = message !== ")" ? message : "";
+        this.message = message !== ";" ? message : "";
     }
 
     test() {
         if (this.expected.eval() !== this.actual.eval()) {
             return `\
-Test failed${this.message ? ` ${this.message}` : ""} ${this.file.path}:${this.line}
-Expected: ${this.expected.eval()}
-Actual: ${this.actual.eval()}
+Test failed${this.message ? ` ${this.message}` : ""} ./${this.file.path}:${this.line}
+    Expected: ${this.expected.eval()}
+    Actual: ${this.actual.eval()}
 `;
         }
         return "";

@@ -36,8 +36,8 @@ statementList: blockStatement+;
 
 actionStatement
   : singleExpression eos # InlineAction
-  | UTest '(' singleExpression ',' singleExpression (
-    ',' StringLiteral
+  | UTest '(' singleExpression (
+    ',' singleExpression (',' StringLiteral)?
   )? ')' eos # UnitTest
   ;
 
@@ -88,12 +88,17 @@ optionalElementList
   : ','* singleExpression? (','+ singleExpression)* ','* // Yes, everything is optional
   ;
 
+arguments: '(' (argument? (',' argument?)*) ')';
+
+argument: singleExpression | identifier;
+
 expressionSequence
   : singleExpression (',' singleExpression)*
   ;
 
 singleExpression
-  : '!' singleExpression                                        # NotExpression
+  : singleExpression arguments                                  # FunctionExpression
+  | '!' singleExpression                                        # NotExpression
   | singleExpression ('*' | '/' | '%') singleExpression         # MultiplicativeExpression
   | singleExpression ('+' | '-') singleExpression               # AdditiveExpression
   | singleExpression ('<' | '>' | '<=' | '>=') singleExpression # RelationalExpression

@@ -8,7 +8,8 @@ utest(!!!!!true, !!!!!!false, "Lots of nots");
 
 utest(true1, true);
 utest(false1, false);
-utest(false1, !true1);
 
+utest(false1, !true1);
 utest(true1, !false1);
 utest(true1, !!true1);
+

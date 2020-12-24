@@ -1,8 +1,6 @@
 #!/usr/bin/env node
 
 import * as yargs from "yargs";
-import * as fs from "fs";
-import { parse } from "./hlcc/parser";
 import { HLFileScope } from "./hlcc/ast/fileScope";
 
 const argv = yargs

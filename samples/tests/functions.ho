@@ -1,0 +1,12 @@
+a = 23;
+xxx = 23;
+add2 = (number a = xxx, number b, number c) => a + b + c;
+utest(add2(, 2, 3), 28);
+
+add = (number a, number b, number c) => a + b + c;
+utest(add(1, 2, 3), 6);
+
+{
+    b = xxx;
+    a = 22;
+}

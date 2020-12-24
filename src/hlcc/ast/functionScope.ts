@@ -1,5 +1,5 @@
 import { ExpresionT, ExpresionType } from "./node";
-import { isRHS, RHS } from "./expression";
+import { HLExpression, isRHS, RHS } from "./expression";
 import { HLScope } from "./scope";
 import { ArrowBody, ArrowParamater } from "./function";
 import { Declaration } from "./declaration";
@@ -10,6 +10,10 @@ export class HLFunctionScope extends HLScope implements RHS {
     private _body: ArrowBody;
 
     get type(): ExpresionType {
+        return "function";
+    }
+
+    get returnType(): ExpresionType {
         return this._body?.returnExpression?.type;
     }
 
@@ -20,6 +24,14 @@ export class HLFunctionScope extends HLScope implements RHS {
 
     eval(): ExpresionT {
         return this._body?.returnExpression?.eval();
+    }
+
+    calc(args: HLExpression[]): ExpresionT {
+        const defaultExpressions = this._params.map(p => p.defaultExpression());
+        this._params.forEach((param, i) => param.defaultExpression(args[i] || param.defaultExpression()));
+        const retVal = this._body?.returnExpression?.eval();
+        this._params.forEach((param, i) => param.defaultExpression(defaultExpressions[i]));
+        return retVal;
     }
 
     visitArrowFunction(ctx) {

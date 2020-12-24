@@ -1,8 +1,8 @@
 import { ErrorListenerError } from "../errorListener";
 import { Range } from "./scope";
 
-export type ExpresionT = boolean | number | string | boolean[] | number[] | string[];
-export type ExpresionType = "unknown" | "boolean" | "number" | "string" | "boolean[]" | "number[]" | "string[]";
+export type ExpresionT = boolean | number | string | boolean[] | number[] | string[] | ((...args: any[]) => any);
+export type ExpresionType = "unknown" | "boolean" | "number" | "string" | "boolean[]" | "number[]" | "string[]" | "function";
 export function isArray(type: ExpresionType) {
     switch (type) {
         case "boolean[]":
@@ -41,7 +41,7 @@ export class HLNode implements Range {
         return retVal;
     }
 
-    constructor(private ctx: any) {
+    constructor(protected ctx: any) {
     }
 
     createError(source: string, message: string): ErrorListenerError {

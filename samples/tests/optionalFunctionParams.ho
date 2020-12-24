@@ -1,0 +1,20 @@
+add = (number a = 5, number b = 7, number c = 11) => a + b + c;
+
+utest(add(), 23);
+utest(add(,), 23);
+utest(add(,,), 23);
+
+utest(add(13), 31);
+utest(add(13,), 31);
+utest(add(13,,), 31);
+
+utest(add(,13), 29);
+utest(add(,13,), 29);
+
+utest(add(,,13), 25);
+
+utest(add(13, 17), 41);
+utest(add(13, 17,), 41);
+utest(add(13,,17), 37);
+
+utest(add(13, 17, 23), 53);

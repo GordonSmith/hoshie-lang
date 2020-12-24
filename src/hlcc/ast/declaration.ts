@@ -5,12 +5,10 @@ import { HLScope } from "./scope";
 export class HLDeclaration extends HLNode {
 
     get type(): ExpresionType {
-        debugger;
         return undefined;
     }
 
     get expression(): RHS {
-        debugger;
         return undefined;
     }
 
@@ -19,7 +17,6 @@ export class HLDeclaration extends HLNode {
     }
 
     eval() {
-        debugger;
         return undefined;
     }
 }
