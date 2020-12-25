@@ -136,7 +136,7 @@ export class HLFileScope extends HLScope {
     }
 
     visitArrowFunction(ctx) {
-        const f = new HLFunctionScope(this.path, ctx);
+        const f = new HLFunctionScope(this.path, ctx, this);
         return f;
     }
 }

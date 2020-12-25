@@ -179,8 +179,9 @@ export class HLScope extends HLParserVisitor {
     visitRelationalExpression(ctx) {
         const [, action] = ctx.children;
         const [lhs, , rhs] = super.visitRelationalExpression(ctx);
-        if (lhs.type === "number" && rhs.type === "number") {
-        } else if (lhs.type === "string" && rhs.type === "string") {
+        if (lhs.type === "boolean" && rhs.type === "boolean" ||
+            lhs.type === "number" && rhs.type === "number" ||
+            lhs.type === "string" && rhs.type === "string") {
         } else {
             this.ctxError(ctx, "Relational Expression is not valid");
         }

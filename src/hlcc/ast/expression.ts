@@ -18,7 +18,7 @@ export class HLExpression extends HLNode implements RHS {
         return undefined;
     }
 
-    constructor(ctx: any, readonly file: HLScope) {
+    constructor(ctx: any, readonly scope: HLScope) {
         super(ctx);
     }
 
@@ -37,8 +37,8 @@ export class NotExpression extends HLExpression {
         return "boolean";
     }
 
-    constructor(ctx: any, file: HLScope, readonly expression: HLExpression) {
-        super(ctx, file);
+    constructor(ctx: any, scope: HLScope, readonly expression: HLExpression) {
+        super(ctx, scope);
     }
 
     eval(): boolean | number | string {
@@ -53,8 +53,8 @@ export class MultiplicativeExpression extends HLExpression {
         return this.lhs.type;
     }
 
-    constructor(ctx: any, file: HLScope, readonly lhs: HLExpression, readonly rhs: HLExpression, readonly multiplicative: MultiplicativeT) {
-        super(ctx, file);
+    constructor(ctx: any, scope: HLScope, readonly lhs: HLExpression, readonly rhs: HLExpression, readonly multiplicative: MultiplicativeT) {
+        super(ctx, scope);
     }
 
     eval(): boolean | number | string {
@@ -80,8 +80,8 @@ export class AdditiveExpression extends HLExpression {
         return this.lhs.type;
     }
 
-    constructor(ctx: any, file: HLScope, readonly lhs: HLExpression, readonly rhs: HLExpression, readonly action: AdditiveT) {
-        super(ctx, file);
+    constructor(ctx: any, scope: HLScope, readonly lhs: HLExpression, readonly rhs: HLExpression, readonly action: AdditiveT) {
+        super(ctx, scope);
     }
 
     eval(): boolean | number | string {
@@ -102,14 +102,15 @@ export class RelationalExpression extends HLExpression {
         return "boolean";
     }
 
-    constructor(ctx: any, file: HLScope, readonly lhs: HLExpression, readonly rhs: HLExpression, readonly action: RelationalT) {
-        super(ctx, file);
+    constructor(ctx: any, scope: HLScope, readonly lhs: HLExpression, readonly rhs: HLExpression, readonly action: RelationalT) {
+        super(ctx, scope);
     }
 
     eval(): boolean | number | string {
         const lhs = this.lhs.eval();
         const rhs = this.rhs.eval();
-        if (typeof lhs === "number" && typeof rhs === "number") {
+        if (typeof lhs === "boolean" && typeof rhs === "boolean" ||
+            typeof lhs === "number" && typeof rhs === "number") {
             switch (this.action) {
                 case "<":
                     return lhs < rhs;
@@ -142,8 +143,8 @@ export class EqualityExpression extends HLExpression {
         return "boolean";
     }
 
-    constructor(ctx: any, file: HLScope, readonly lhs: HLExpression, readonly rhs: HLExpression, readonly action: EqualityT) {
-        super(ctx, file);
+    constructor(ctx: any, scope: HLScope, readonly lhs: HLExpression, readonly rhs: HLExpression, readonly action: EqualityT) {
+        super(ctx, scope);
     }
 
     eval(): boolean | number | string {
@@ -164,8 +165,8 @@ export class LogicalExpression extends HLExpression {
         return "boolean";
     }
 
-    constructor(ctx: any, file: HLScope, readonly lhs: HLExpression, readonly rhs: HLExpression, readonly action: LogicalT) {
-        super(ctx, file);
+    constructor(ctx: any, scope: HLScope, readonly lhs: HLExpression, readonly rhs: HLExpression, readonly action: LogicalT) {
+        super(ctx, scope);
     }
 
     eval(): boolean | number | string {
@@ -183,8 +184,8 @@ export class IdentifierExpression extends HLExpression {
         return this.ref?.type;
     }
 
-    constructor(ctx: any, file: HLScope, readonly id: string, readonly ref: RHS) {
-        super(ctx, file);
+    constructor(ctx: any, scope: HLScope, readonly id: string, readonly ref: RHS) {
+        super(ctx, scope);
     }
 
     eval() {
@@ -199,8 +200,8 @@ export class BooleanExpression extends HLExpression {
         return "boolean";
     }
 
-    constructor(ctx: any, file: HLScope, readonly value: boolean) {
-        super(ctx, file);
+    constructor(ctx: any, scope: HLScope, readonly value: boolean) {
+        super(ctx, scope);
     }
 
     eval(): boolean {
@@ -214,8 +215,8 @@ export class NumericExpression extends HLExpression {
         return "number";
     }
 
-    constructor(ctx: any, file: HLScope, readonly value: number) {
-        super(ctx, file);
+    constructor(ctx: any, scope: HLScope, readonly value: number) {
+        super(ctx, scope);
     }
 
     eval(): number {
@@ -229,8 +230,8 @@ export class StringExpression extends HLExpression {
         return "string";
     }
 
-    constructor(ctx: any, file: HLScope, readonly value: string) {
-        super(ctx, file);
+    constructor(ctx: any, scope: HLScope, readonly value: string) {
+        super(ctx, scope);
     }
 
     eval(): string {
@@ -244,8 +245,8 @@ export class ArrayExpression extends HLExpression {
         return (this.value?.length ? this.value[0].type + "[]" : "unknown[]") as ExpresionType;
     }
 
-    constructor(ctx: any, file: HLScope, readonly value: (BooleanExpression | NumericExpression | StringExpression)[]) {
-        super(ctx, file);
+    constructor(ctx: any, scope: HLScope, readonly value: (BooleanExpression | NumericExpression | StringExpression)[]) {
+        super(ctx, scope);
     }
 
     eval() {
@@ -262,8 +263,8 @@ export class FunctionExpression extends HLExpression {
         return this.func.returnType;
     }
 
-    constructor(ctx: any, file: HLScope, readonly func: HLFunctionScope, readonly args: HLExpression[]) {
-        super(ctx, file);
+    constructor(ctx: any, scope: HLScope, readonly func: HLFunctionScope, readonly args: HLExpression[]) {
+        super(ctx, scope);
     }
 
     eval() {

@@ -1,12 +1,20 @@
-a = 23;
-xxx = 23;
-add2 = (number a = xxx, number b, number c) => a + b + c;
-utest(add2(, 2, 3), 28);
+arrowAdd = (number a, number b, number c) => a + b + c;
+utest(arrowAdd(1, 2, 3), 6);
 
-add = (number a, number b, number c) => a + b + c;
-utest(add(1, 2, 3), 6);
+bodyAdd = (number a, number b, number c) => {
+    return a + b + c;
+};
+utest(bodyAdd(1, 2, 3), 6);
 
-{
-    b = xxx;
-    a = 22;
-}
+a = 5;
+b = 7;
+c = 11;
+d = 13;
+xxx = 13;
+scopeTestAdd = (number a = xxx, number b, number c) => {
+    xxx = a;
+    d = b + c;
+    return xxx + d;
+};
+utest(scopeTestAdd(1, 2, 3), 6);
+utest(scopeTestAdd(, 2, 3), 18);

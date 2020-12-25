@@ -14,9 +14,9 @@ export class InlineAction extends HLAction {
 
     protected _declaration: HLDeclaration;
 
-    constructor(ctx: any, readonly file: HLScope, readonly id: string) {
+    constructor(ctx: any, readonly scope: HLScope, readonly id: string) {
         super(ctx);
-        this._declaration = file.resolve(id);
+        this._declaration = scope.resolve(id);
     }
 
     check(): HLError | undefined {
@@ -30,7 +30,7 @@ export class InlineAction extends HLAction {
 
 export class Test extends HLAction {
 
-    constructor(ctx: any, readonly file: HLScope, readonly actual: HLExpression, readonly expected: HLExpression, readonly message?: string) {
+    constructor(ctx: any, readonly scope: HLScope, readonly actual: HLExpression, readonly expected: HLExpression, readonly message?: string) {
         super(ctx);
         this.message = message !== ";" ? message : "";
     }
@@ -38,7 +38,7 @@ export class Test extends HLAction {
     test() {
         if (this.expected.eval() !== this.actual.eval()) {
             return `\
-Test failed${this.message ? ` ${this.message}` : ""} ./${this.file.path}:${this.line}
+Test failed${this.message ? ` ${this.message}` : ""} ./${this.scope.path}:${this.line}
     Expected: ${this.expected.eval()}
     Actual: ${this.actual.eval()}
 `;

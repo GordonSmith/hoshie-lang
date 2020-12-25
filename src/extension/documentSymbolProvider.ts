@@ -40,7 +40,7 @@ export class HLDocumentSymbolProvider implements vscode.DocumentSymbolProvider {
             hlFile.importedFiles.forEach(i => addSymbol(i.file.label, i.file.path, vscode.SymbolKind.File, new vscode.Range(i.line - 1, i.column, i.line - 1, i.column + i.length)));
             for (const declKey in hlFile.declarations) {
                 const decl = hlFile.declarations[declKey];
-                addSymbol(declKey, decl.file.path, vscode.SymbolKind.Variable, new vscode.Range(decl.line - 1, decl.column, decl.line - 1, decl.column + decl.length));
+                addSymbol(declKey, decl.scope.path, vscode.SymbolKind.Variable, new vscode.Range(decl.line - 1, decl.column, decl.line - 1, decl.column + decl.length));
             }
 
             resolve(retVal);

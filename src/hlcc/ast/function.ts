@@ -31,7 +31,7 @@ export class LengthFunction extends HLFunction {
         return "number";
     }
 
-    constructor(ctx: any, readonly file: HLScope, readonly expression: RHS) {
+    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
         super(ctx);
     }
 
@@ -51,7 +51,7 @@ export class ArrowParamater extends HLNode implements RHS {
         return this._type;
     }
 
-    constructor(ctx: any, readonly file: HLScope, readonly _type: ExpresionType, readonly id: string, defaultExpression?: RHS) {
+    constructor(ctx: any, readonly scope: HLScope, readonly _type: ExpresionType, readonly id: string, defaultExpression?: RHS) {
         super(ctx);
         this._defaultExpression = defaultExpression;
     }
@@ -79,7 +79,7 @@ export class ArrowBody extends HLNode {
         return this.returnExpression.type;
     }
 
-    constructor(ctx: any, readonly file: HLScope, readonly items: HLDeclaration[], readonly returnExpression: RHS) {
+    constructor(ctx: any, readonly scope: HLScope, readonly items: HLDeclaration[], readonly returnExpression: RHS) {
         super(ctx);
     }
 }
