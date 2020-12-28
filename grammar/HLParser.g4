@@ -14,6 +14,7 @@ fileElement: fileStatement;
 
 fileStatement
   : block
+  | typeStatement
   | variableStatement
   | actionStatement
   | importStatement
@@ -41,11 +42,27 @@ actionStatement
   )? ')' eos # UnitTest
   ;
 
+typeStatement: typeDeclaration eos;
+
+typeDeclaration: IdentifierType typeInitialiser;
+
+typeInitialiser: '=' singleTypeExpression;
+
+singleTypeExpression
+  : Boolean ('[' ']')?           # BooleanType
+  | Number ('[' ']')?            # NumberType
+  | String ('[' ']')?            # StringType
+  | rowTypeDefinition ('[' ']')? # RowType
+  | IdentifierType ('[' ']')?    # IdentifierType
+  ;
+
 variableStatement: variableDeclaration eos;
 
-variableDeclaration: Identifier initialiser;
+variableDeclaration: Identifier variableInitialiser;
 
-initialiser: '=' singleExpression;
+variableInitialiser
+  : '=' singleExpression (As singleTypeExpression)?
+  ;
 
 importStatement: 'import' importFromBlock;
 
@@ -107,17 +124,28 @@ singleExpression
   | identifier                                                  # IdentifierExpression
   | literal                                                     # LiteralExpression
   | arrayLiteral                                                # ArrayLiteralExpression
-  | Length '(' singleExpression ')'                             # LengthFunction
   | arrowFunctionParameters '=>' arrowFunctionBody              # ArrowFunction
+  | Length '(' singleExpression ')'                             # LengthFunction
   ;
 
 literal
   : BooleanLiteral # BooleanLiteralExpression
   | DecimalLiteral # NumberLiteralExpression
   | StringLiteral  # StringLiteralExpression
+  | dataLiteral    # DataLiteralExpression
   ;
 
+dataLiteral: ('{' '}' | '{' elementList '}');
+
 arrayLiteral: ('[' ']' | '[' elementList ']');
+
+rowTypeDefinition: '{' formalFieldTypeList? '}';
+
+formalFieldTypeList
+  : formalFieldType (',' formalFieldType)*
+  ;
+
+formalFieldType: singleTypeExpression identifier;
 
 arrowFunctionParameters: '(' formalParameterList? ')';
 
@@ -131,16 +159,9 @@ formalParameterList
   ;
 
 formalParameterArg
-  : paramaterType identifier ('=' singleExpression)? // ECMAScript 6: Initialization
-  ;
-
-paramaterType
-  : Boolean ('[' ']')?
-  | Number ('[' ']')?
-  | String ('[' ']')?
+  : singleTypeExpression identifier ('=' singleExpression)? // ECMAScript 6: Initialization
   ;
 
 functionBody: fileElement* Return singleExpression eos;
 
 eos: ';' | EOF;
-

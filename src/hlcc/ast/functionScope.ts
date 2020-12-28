@@ -46,7 +46,7 @@ export class HLFunctionScope extends HLScope implements RHS {
     visitFormalParameterArg(ctx) {
         const [, , , expression] = this.paramsScope.visitFormalParameterArg(ctx);
         const id = ctx.identifier();
-        const rhs = new ArrowParamater(ctx, this, ctx.paramaterType().getText(), id.getText(), expression);
+        const rhs = new ArrowParamater(ctx, this, ctx.singleTypeExpression().getText(), id.getText(), expression);
         this._params.push(rhs);
         const decl = new Declaration(ctx, this, id.getText(), rhs);
         this.appendDeclaration(ctx, id.getText(), decl);

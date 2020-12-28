@@ -8,7 +8,13 @@ oneTwoThree;
 haw = "Hello and Welcome!";
 haw;
 
+arr = ["Hello", "and", "Welcome"];
+
 three = () => 1 + 2;
 three();
 add = (number a, number b) => a + b;
 add(2, 1);
+
+row = {false, true, 10, 20, "aaa", "bbb"};
+row;
+ 

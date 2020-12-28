@@ -1,0 +1,35 @@
+Test = boolean;
+
+xxx = [42] as number[];
+
+Person = {number id, string lname, string fname};
+People = {number id, string lname, string fname}[];
+People2 = Person[];
+
+p1 = {7, "Bond", "James"} as Person;
+p2 = [{7, "Bond", "James"}, {1, "Q", "Mr"}] as Person[];
+p3 = [{7, "Bond", "James"}, {1, "Q", "Mr"}] as People;
+
+aFunc = (boolean b) => {
+    return b;
+};
+
+personFunc = (Person row) => {
+    return row;
+};
+
+personFunc2 = ({number id, string lname, string fname} row) => {
+    return row;
+};
+
+peopleFunc = (People rows) => {
+    return rows;
+};
+
+peopleFunc2 = (Person[] rows) => {
+    return rows;
+};
+
+peopleFunc3 = ({number id, string lname, string fname}[] rows) => {
+    return rows;
+}; 

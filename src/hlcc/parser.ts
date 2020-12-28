@@ -32,21 +32,21 @@ export function parse(text: string): ParseResponse {
 
     parser.buildParseTrees = true;
 
-    try {
-        const tree = (parser as any).program();
-        return {
-            full: true,
-            tree,
-            lexErrors: lexerErrorListener.errors,
-            parseErrors: parserErrorListener.errors
-        };
-    } catch (e) {
-        console.log(e);
-        return {
-            full: false,
-            lexErrors: lexerErrorListener.errors,
-            parseErrors: parserErrorListener.errors,
-            exception: e
-        };
-    }
+    // try {
+    const tree = (parser as any).program();
+    return {
+        full: true,
+        tree,
+        lexErrors: lexerErrorListener.errors,
+        parseErrors: parserErrorListener.errors
+    };
+    // } catch (e) {
+    //     console.log(e);
+    //     return {
+    //         full: false,
+    //         lexErrors: lexerErrorListener.errors,
+    //         parseErrors: parserErrorListener.errors,
+    //         exception: e
+    //     };
+    // }
 }

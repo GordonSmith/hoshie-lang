@@ -1,9 +1,10 @@
 import { HLError, HLNode, removeQuotes } from "./node";
 import { Declaration, HLDeclaration } from "./declaration";
-import { AdditiveExpression, ArrayExpression, BooleanExpression, EqualityExpression, IdentifierExpression, LogicalExpression, MultiplicativeExpression, NotExpression, NumericExpression, RelationalExpression, StringExpression, isRHS, FunctionExpression, HLExpression } from "./expression";
+import { AdditiveExpression, ArrayExpression, BooleanExpression, EqualityExpression, IdentifierExpression, LogicalExpression, MultiplicativeExpression, NotExpression, NumericExpression, RelationalExpression, StringExpression, isRHS, FunctionExpression, HLExpression, DataExpression } from "./expression";
 import { HLAction, InlineAction, Test } from "./action";
 import { LengthFunction, ArrowParamater, ArrowBody } from "./function";
 import { HLParserVisitor } from "../grammar/HLParserVisitor";
+import { ArrayType, BooleanType, NumberType, RowType, StringType, TypeDeclaration } from "./types";
 
 export interface Range {
     line: number,
@@ -17,6 +18,7 @@ export class HLScope extends HLParserVisitor {
     private _actions: HLAction[] = [];
     private _tests: Test[] = [];
 
+    readonly types: { [id: string]: TypeDeclaration } = {};
     readonly declarations: { [id: string]: HLDeclaration } = {};
 
     constructor(readonly label: string, readonly path: string, readonly text?: string) {
@@ -95,6 +97,19 @@ export class HLScope extends HLParserVisitor {
             this.ctxError(ctx, `Duplicate Symbol "${id}"`);
         } else {
             this.declarations[id] = decl;
+        }
+    }
+
+    resolveType(id: string): TypeDeclaration | undefined {
+        const retVal = this.types[id];
+        return retVal;
+    }
+
+    appendType(ctx, id: string, decl: TypeDeclaration) {
+        if (this.types[id]) {
+            this.ctxError(ctx, `Duplicate Type "${id}"`);
+        } else {
+            this.types[id] = decl;
         }
     }
 
@@ -226,7 +241,7 @@ export class HLScope extends HLParserVisitor {
     visitArrayLiteralExpression(ctx) {
         const [Arrayliteral] = super.visitArrayLiteralExpression(ctx);
         const [, literalItems] = Arrayliteral;
-        const literals = literalItems?.filter(item => item !== ",") || [];
+        const literals = literalItems || [];
         literals.forEach(item => {
             if (item.type !== literals[0].type) {
                 this.appendError(item, `All items must be type of "${literals[0].type}"`);
@@ -243,6 +258,11 @@ export class HLScope extends HLParserVisitor {
         return new LengthFunction(ctx, this, expression);
     }
 
+    visitElementList(ctx) {
+        const children = super.visitElementList(ctx);
+        return children.filter(child => child !== ",");
+    }
+
     visitBooleanLiteralExpression(ctx) {
         return new BooleanExpression(ctx, this, ctx.BooleanLiteral().getText() === "true");
     }
@@ -255,9 +275,81 @@ export class HLScope extends HLParserVisitor {
         return new StringExpression(ctx, this, removeQuotes(ctx.StringLiteral().getText()));
     }
 
-    visitInitialiser(ctx) {
-        const [, expression] = super.visitInitialiser(ctx);
-        return expression;
+    visitDataLiteralExpression(ctx) {
+        const [[_, items]] = super.visitDataLiteralExpression(ctx);
+        return new DataExpression(ctx, this, items);
+    }
+
+    //  Types  ---
+
+    visitTypeStatement(ctx) {
+        const [hlVar] = super.visitTypeStatement(ctx);
+        return hlVar;
+    }
+
+    visitTypeDeclaration(ctx) {
+        const [id] = ctx.children;
+        const [, rhs] = super.visitTypeDeclaration(ctx);
+        const hlVar = new TypeDeclaration(ctx, this, id.getText(), rhs);
+        this.appendType(ctx, hlVar.id, hlVar);
+        return hlVar;
+    }
+
+    visitTypeInitialiser(ctx) {
+        const children = super.visitTypeInitialiser(ctx);
+        const [, type] = children;
+        return type;
+    }
+
+    visitBooleanType(ctx) {
+        return ctx.OpenBracket() && ctx.CloseBracket() ? new ArrayType(ctx, this, new BooleanType(ctx, this)) : new BooleanType(ctx, this);
+    }
+
+    visitNumberType(ctx) {
+        return ctx.OpenBracket() && ctx.CloseBracket() ? new ArrayType(ctx, this, new NumberType(ctx, this)) : new NumberType(ctx, this);
+    }
+
+    visitStringType(ctx) {
+        return ctx.OpenBracket() && ctx.CloseBracket() ? new ArrayType(ctx, this, new StringType(ctx, this)) : new StringType(ctx, this);
+    }
+
+    visitRowType(ctx) {
+        const children = super.visitRowType(ctx);
+        return new RowType(ctx, this, children);
+    }
+
+    visitIdentifierType(ctx) {
+        const children = super.visitIdentifierType(ctx);
+        const [id, openBracket, closeBracket] = children;
+        const type = this.resolveType(id);
+        if (!type) {
+            this.ctxError(ctx, `Invalid type "${id}"`);
+        }
+        return openBracket && closeBracket ? new ArrayType(ctx, this, type) : type;
+    }
+
+    visitRowTypeDefinition(ctx) {
+        const children = super.visitRowTypeDefinition(ctx);
+        const [, fields] = children;
+        return fields;
+    }
+
+    visitFormalFieldTypeList(ctx) {
+        const children = super.visitFormalFieldTypeList(ctx);
+        return children.filter(child => child !== ",");
+    }
+
+    visitFormalFieldType(ctx) {
+        const children = super.visitFormalFieldType(ctx);
+        const [type, [id]] = children;
+        return new TypeDeclaration(ctx, this, removeQuotes(id), type);
+    }
+
+    //  Declarations  ---
+
+    visitVariableStatement(ctx) {
+        const [hlVar] = super.visitVariableStatement(ctx);
+        return hlVar;
     }
 
     visitVariableDeclaration(ctx) {
@@ -268,9 +360,23 @@ export class HLScope extends HLParserVisitor {
         return hlVar;
     }
 
-    visitVariableStatement(ctx) {
-        const [hlVar] = super.visitVariableStatement(ctx);
-        return hlVar;
+    visitVariableInitialiser(ctx) {
+        const children = super.visitVariableInitialiser(ctx);
+        const [, expression, , asType] = children;
+        const isArray = asType instanceof ArrayType;
+        switch (expression.type) {
+            case "data":
+                expression.typeInfo(this.resolveType(asType)?.toString());
+                break;
+            case "data[]":
+                expression.typeInfo(this.resolveType(asType)?.toString());
+                break;
+            default:
+                if (asType && expression.type !== asType + (isArray ? "[]" : "")) {
+                    this.appendError(expression, `Mismatched types "${expression.type}" as "${asType}"`);
+                }
+        }
+        return expression;
     }
 
     visitInlineAction(ctx) {

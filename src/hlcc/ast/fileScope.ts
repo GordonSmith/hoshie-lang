@@ -28,14 +28,14 @@ export class HLFileScope extends HLScope {
 
         this._parsed = parse(text);
         if (this._parsed.full) {
-            try {
-                this.visitProgram(this._parsed.tree);
-            } catch (e) {
-                if (!this._parsed.lexErrors.length && !this._parsed.parseErrors.length) {
-                    //  Unexpected visitor error...
-                    console.error(e);
-                }
-            }
+            // try {
+            this.visitProgram(this._parsed.tree);
+            // } catch (e) {
+            //     if (!this._parsed.lexErrors.length && !this._parsed.parseErrors.length) {
+            //         //  Unexpected visitor error...
+            //         console.error(e);
+            //     }
+            // }
         }
     }
 

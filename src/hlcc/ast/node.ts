@@ -2,7 +2,7 @@ import { ErrorListenerError } from "../errorListener";
 import { Range } from "./scope";
 
 export type ExpresionT = boolean | number | string | boolean[] | number[] | string[] | ((...args: any[]) => any);
-export type ExpresionType = "unknown" | "boolean" | "number" | "string" | "boolean[]" | "number[]" | "string[]" | "function";
+export type ExpresionType = "unknown" | "boolean" | "number" | "string" | "boolean[]" | "number[]" | "string[]" | "data" | "data[]" | "function";
 export function isArray(type: ExpresionType) {
     switch (type) {
         case "boolean[]":

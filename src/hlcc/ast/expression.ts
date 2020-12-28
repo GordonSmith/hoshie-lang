@@ -239,14 +239,35 @@ export class StringExpression extends HLExpression {
     }
 }
 
+export class DataExpression extends HLExpression {
+
+    get type(): ExpresionType {
+        return "data";
+    }
+
+    constructor(ctx: any, scope: HLScope, readonly fields: HLExpression[]) {
+        super(ctx, scope);
+    }
+
+    typeInfo(_: HLExpression) {
+    }
+
+    eval(): string {
+        return "{ " + this.fields.map(exp => exp.eval()).join(", ") + "}";
+    }
+}
+
 export class ArrayExpression extends HLExpression {
 
     get type(): ExpresionType {
         return (this.value?.length ? this.value[0].type + "[]" : "unknown[]") as ExpresionType;
     }
 
-    constructor(ctx: any, scope: HLScope, readonly value: (BooleanExpression | NumericExpression | StringExpression)[]) {
+    constructor(ctx: any, scope: HLScope, readonly value: (BooleanExpression | NumericExpression | StringExpression | DataExpression)[]) {
         super(ctx, scope);
+    }
+
+    typeInfo(_: any) {
     }
 
     eval() {

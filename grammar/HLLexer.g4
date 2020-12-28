@@ -43,6 +43,8 @@ NullLiteral: 'null';
 
 BooleanLiteral: 'true' | 'false';
 
+IdentifierType: IdentifierTypeStart IdentifierPart*;
+
 Identifier: IdentifierStart IdentifierPart*;
 
 DecimalLiteral
@@ -73,13 +75,16 @@ StringLiteral
   ;
 
 fragment IdentifierPart
-  : IdentifierStart
+  : [_]
+  | [a-zA-Z]
   | [0-9]
   | '\u200C'
   | '\u200D'
   ;
 
-fragment IdentifierStart: [_] | [a-zA-Z];
+fragment IdentifierTypeStart: [A-Z];
+
+fragment IdentifierStart: [_] | [a-z];
 
 fragment DoubleStringCharacter
   : ~ ["\\\r\n]
