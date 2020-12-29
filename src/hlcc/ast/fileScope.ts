@@ -39,6 +39,16 @@ export class HLFileScope extends HLScope {
         }
     }
 
+    resolveScope(line: number, column: number) {
+        for (const key in this.declarations) {
+            const decl = this.declarations[key];
+            if (decl.expression instanceof HLFunctionScope && decl.expression.contains(line, column)) {
+                return decl.expression;
+            }
+        }
+        return this;
+    }
+
     errors(): HLError[] {
         return [
             ...this._parsed.lexErrors.map(e => hlError(this.path, e)),

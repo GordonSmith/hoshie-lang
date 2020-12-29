@@ -17,4 +17,20 @@ add(2, 1);
 
 row = {false, true, 10, 20, "aaa", "bbb"};
 row;
- 
+
+row2 = {7, "James", "Bond", true} as {number id, string fname, string lname, boolean male};
+row2;
+
+Person = {number id, string fname, string lname, boolean male};
+row3 = {7, "James", "Bond", true} as Person;
+row3;
+
+data = [{7, "James", "Bond", true}, {1001, "Jane", "Moneypenny", true}] as {number id, string fname, string lname, boolean male}[];
+data;
+
+data2 = [{7, "James", "Bond", true}, {1001, "Jane", "Moneypenny", true}] as Person[];
+data2;
+
+PersonArr = Person[];
+data3 = [{7, "James", "Bond", true}, {1001, "Jane", "Moneypenny", true}] as PersonArr;
+data3;

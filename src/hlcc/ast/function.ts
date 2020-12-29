@@ -82,4 +82,12 @@ export class ArrowBody extends HLNode {
     constructor(ctx: any, readonly scope: HLScope, readonly items: HLDeclaration[], readonly returnExpression: RHS) {
         super(ctx);
     }
+
+    contains(line: number, column: number) {
+        if (line < this.ctx.start.line) return false;
+        if (line > this.ctx.stop.line) return false;
+        if (line === this.ctx.start.line && column < this.ctx.start.column) return false;
+        if (line === this.ctx.stop.line && column > this.ctx.stop.column) return false;
+        return true;
+    }
 }

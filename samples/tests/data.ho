@@ -9,6 +9,7 @@ People2 = Person[];
 p1 = {7, "Bond", "James"} as Person;
 p2 = [{7, "Bond", "James"}, {1, "Q", "Mr"}] as Person[];
 p3 = [{7, "Bond", "James"}, {1, "Q", "Mr"}] as People;
+p4 = [{7, "Bond", "James"}, {1, "Q", "Mr"}] as People2;
 
 aFunc = (boolean b) => {
     return b;

@@ -34,6 +34,10 @@ export class HLFunctionScope extends HLScope implements RHS {
         return retVal;
     }
 
+    contains(line: number, column: number) {
+        return this._body.contains(line, column);
+    }
+
     //  Visitors  ---
 
     visitArrowFunction(ctx) {

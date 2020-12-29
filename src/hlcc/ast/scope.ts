@@ -315,17 +315,19 @@ export class HLScope extends HLParserVisitor {
 
     visitRowType(ctx) {
         const children = super.visitRowType(ctx);
-        return new RowType(ctx, this, children);
+        const [fields, openBracket, closeBracket] = children;
+        const rowType = new RowType(ctx, this, fields);
+        return openBracket && closeBracket ? new ArrayType(ctx, this, rowType) : rowType;
     }
 
     visitIdentifierType(ctx) {
         const children = super.visitIdentifierType(ctx);
         const [id, openBracket, closeBracket] = children;
-        const type = this.resolveType(id);
-        if (!type) {
+        const idType = this.resolveType(id);
+        if (!idType) {
             this.ctxError(ctx, `Invalid type "${id}"`);
         }
-        return openBracket && closeBracket ? new ArrayType(ctx, this, type) : type;
+        return openBracket && closeBracket ? new ArrayType(ctx, this, idType.type) : idType.type;
     }
 
     visitRowTypeDefinition(ctx) {
@@ -342,7 +344,7 @@ export class HLScope extends HLParserVisitor {
     visitFormalFieldType(ctx) {
         const children = super.visitFormalFieldType(ctx);
         const [type, [id]] = children;
-        return new TypeDeclaration(ctx, this, removeQuotes(id), type);
+        return new TypeDeclaration(ctx, this, id, type);
     }
 
     //  Declarations  ---
@@ -363,17 +365,14 @@ export class HLScope extends HLParserVisitor {
     visitVariableInitialiser(ctx) {
         const children = super.visitVariableInitialiser(ctx);
         const [, expression, , asType] = children;
-        const isArray = asType instanceof ArrayType;
         switch (expression.type) {
             case "data":
-                expression.typeInfo(this.resolveType(asType)?.toString());
-                break;
             case "data[]":
-                expression.typeInfo(this.resolveType(asType)?.toString());
+                expression.typeInfo(asType?.type);
                 break;
             default:
-                if (asType && expression.type !== asType + (isArray ? "[]" : "")) {
-                    this.appendError(expression, `Mismatched types "${expression.type}" as "${asType}"`);
+                if (asType && expression.type !== asType.eval()) {
+                    this.appendError(expression, `Mismatched types "${expression.type}" as "${asType.eval()}"`);
                 }
         }
         return expression;

@@ -32,7 +32,9 @@ export class HLHoverProvider implements vscode.HoverProvider {
             const hlFile = new HLFileScope("", document.fileName, document.getText());
             this._diagnostic.set(document.fileName, hlFile.allErrors());
 
-            const decl = hlFile.resolve(id);
+            const scope = hlFile.resolveScope(position.line + 1, position.character);
+
+            const decl = scope.resolve(id);
 
             const marked = new vscode.MarkdownString(decl ? `\
 __${decl.expression.type}__:  _${decl.eval()}_

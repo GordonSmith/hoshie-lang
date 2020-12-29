@@ -12,9 +12,10 @@ c = 11;
 d = 13;
 xxx = 13;
 scopeTestAdd = (number a = xxx, number b, number c) => {
-    xxx = a;
-    d = b + c;
-    return xxx + d;
+    xxx = true;
+    d = "Hello";
+    e = a;
+    return a + b + c;
 };
 utest(scopeTestAdd(1, 2, 3), 6);
 utest(scopeTestAdd(, 2, 3), 18);

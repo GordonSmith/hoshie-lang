@@ -1,6 +1,7 @@
 import { HLScope } from "./scope";
 import { ExpresionT, ExpresionType, HLError, HLNode } from "./node";
 import { HLFunctionScope } from "./functionScope";
+import { ArrayType, RowType } from "./types";
 
 export interface RHS {
     type: ExpresionType;
@@ -241,6 +242,8 @@ export class StringExpression extends HLExpression {
 
 export class DataExpression extends HLExpression {
 
+    protected _typeInfo: RowType;
+
     get type(): ExpresionType {
         return "data";
     }
@@ -249,15 +252,25 @@ export class DataExpression extends HLExpression {
         super(ctx, scope);
     }
 
-    typeInfo(_: HLExpression) {
+    typeInfo(_: RowType) {
+        if (_ instanceof RowType) {
+            this._typeInfo = _;
+        } else {
+        }
     }
 
     eval(): string {
-        return "{ " + this.fields.map(exp => exp.eval()).join(", ") + "}";
+        return "{ " + this.fields.map((exp, i) => {
+            const id = this._typeInfo?.fields[i]?.id || i;
+            const isString = exp.type === "string";
+            return `${id}: ${isString ? `"${exp.eval()}"` : exp.eval()}`;
+        }).join(", ") + " }";
     }
 }
 
 export class ArrayExpression extends HLExpression {
+
+    protected _typeInfo: ArrayType;
 
     get type(): ExpresionType {
         return (this.value?.length ? this.value[0].type + "[]" : "unknown[]") as ExpresionType;
@@ -268,12 +281,22 @@ export class ArrayExpression extends HLExpression {
     }
 
     typeInfo(_: any) {
+        if (_ instanceof ArrayType) {
+            this._typeInfo = _;
+        } else {
+        }
     }
 
     eval() {
         if (this.type === "string[]") {
             return (this.value as any[]).map(v => `'${v.eval()}'`);
+        } else if (this.type === "data[]") {
+            return "[ " + (this.value as DataExpression[]).map(v => {
+                v.typeInfo(this._typeInfo?.rowType as RowType);
+                return v.eval();
+            }).join(", ") + " ]";
         }
+
         return (this.value as any[]).map(v => v.eval());
     }
 }
