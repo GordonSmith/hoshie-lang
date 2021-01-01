@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "hlcc check",
-            "type": "node",
+            "type": "pwa-node",
             "request": "launch",
             "skipFiles": [
                 "<node_internals>/**"
@@ -22,7 +22,7 @@
         },
         {
             "name": "hlcc run",
-            "type": "node",
+            "type": "pwa-node",
             "request": "launch",
             "skipFiles": [
                 "<node_internals>/**"
@@ -38,7 +38,7 @@
         },
         {
             "name": "hlcc test",
-            "type": "node",
+            "type": "pwa-node",
             "request": "launch",
             "skipFiles": [
                 "<node_internals>/**"

@@ -28,16 +28,21 @@ Or: '||';
 Arrow: '=>';
 
 //  Keywords
+Boolean: 'boolean';
+Number: 'number';
+String: 'string';
+
 Export: 'export';
 Import: 'import';
 As: 'as';
 From: 'from';
-UTest: 'utest';
-Length: 'length';
-String: 'string';
-Boolean: 'boolean';
-Number: 'number';
 Return: 'return';
+
+Length: 'length';
+
+//  Utilities
+Generate: 'generate';
+UTest: 'utest';
 
 NullLiteral: 'null';
 

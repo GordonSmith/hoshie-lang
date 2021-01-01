@@ -1,3 +1,5 @@
+dimple001 = (number i) => i;
+
 arrowAdd = (number a, number b, number c) => a + b + c;
 utest(arrowAdd(1, 2, 3), 6);
 

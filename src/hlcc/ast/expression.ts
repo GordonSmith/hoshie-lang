@@ -155,6 +155,8 @@ export class EqualityExpression extends HLExpression {
             typeof lhs === "number" && typeof rhs === "number" ||
             typeof lhs === "string" && typeof rhs === "string") {
             return this.action === "==" ? lhs === rhs : lhs !== rhs;
+        } else {
+            debugger;
         }
     }
 }

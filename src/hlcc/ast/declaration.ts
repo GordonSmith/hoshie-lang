@@ -34,7 +34,7 @@ export class Declaration extends HLDeclaration {
     constructor(ctx: any, scope: HLScope, id: string, private _expression: RHS) {
         super(ctx, scope, id);
         if (!isRHS(_expression)) {
-            debugger;
+            // debugger;
         }
         if (Array.isArray(_expression)) {
             // debugger;

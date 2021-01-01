@@ -258,6 +258,12 @@ export class HLScope extends HLParserVisitor {
         return new LengthFunction(ctx, this, expression);
     }
 
+    // visitGenerateFunction(ctx) {
+    //     const children = super.visitGenerateFunction(ctx);
+    //     const [] = children;
+    //     return children;
+    // }
+
     visitElementList(ctx) {
         const children = super.visitElementList(ctx);
         return children.filter(child => child !== ",");
@@ -327,7 +333,7 @@ export class HLScope extends HLParserVisitor {
         if (!idType) {
             this.ctxError(ctx, `Invalid type "${id}"`);
         }
-        return openBracket && closeBracket ? new ArrayType(ctx, this, idType.type) : idType.type;
+        return openBracket && closeBracket ? new ArrayType(ctx, this, idType?.type) : idType?.type;
     }
 
     visitRowTypeDefinition(ctx) {
@@ -365,7 +371,7 @@ export class HLScope extends HLParserVisitor {
     visitVariableInitialiser(ctx) {
         const children = super.visitVariableInitialiser(ctx);
         const [, expression, , asType] = children;
-        switch (expression.type) {
+        switch (expression.etype) {
             case "data":
             case "data[]":
                 expression.typeInfo(asType?.type);
