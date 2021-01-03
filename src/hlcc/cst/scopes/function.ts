@@ -1,8 +1,7 @@
-import { ExpresionT, ExpresionType } from "./node";
-import { HLExpression, isRHS, RHS } from "./expression";
-import { HLScope } from "./scope";
-import { ArrowBody, ArrowParamater } from "./function";
-import { Declaration } from "./declaration";
+import { ExpresionT, ExpresionType } from "../node";
+import { ArrowBody, ArrowParamater, HLExpression, isRHS, RHS } from "../expression";
+import { HLScope } from "../scope";
+import { Declaration } from "../declaration";
 
 export class HLFunctionScope extends HLScope implements RHS {
 
@@ -19,7 +18,7 @@ export class HLFunctionScope extends HLScope implements RHS {
 
     constructor(readonly path: string, readonly ctx, readonly paramsScope: HLScope) {
         super("", path);
-        this.visitArrowFunction(this.ctx);
+        this.visitArrowFunctionExpression(this.ctx);
     }
 
     eval(): ExpresionT {
@@ -40,15 +39,16 @@ export class HLFunctionScope extends HLScope implements RHS {
 
     //  Visitors  ---
 
-    visitArrowFunction(ctx) {
-        const retVal = super.visitArrowFunction(ctx);
-        const [_, _1, body] = retVal;
+    visitArrowFunctionExpression(ctx) {
+        const children = super.visitArrowFunctionExpression(ctx);
+        const [[_, _1, body]] = children;
         this._body = body;
-        return retVal;
+        return children;
     }
 
     visitFormalParameterArg(ctx) {
-        const [, , , expression] = this.paramsScope.visitFormalParameterArg(ctx);
+        const children = this.paramsScope.visitFormalParameterArg(ctx);
+        const [, , , expression] = children;
         const id = ctx.identifier();
         const rhs = new ArrowParamater(ctx, this, ctx.singleTypeExpression().getText(), id.getText(), expression);
         this._params.push(rhs);
@@ -80,3 +80,4 @@ export class HLFunctionScope extends HLScope implements RHS {
         }).filter(row => typeof row !== "string");
     }
 }
+

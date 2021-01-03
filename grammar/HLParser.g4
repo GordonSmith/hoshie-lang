@@ -95,7 +95,7 @@ identifier: Identifier;
 
 reservedWord: keyword | NullLiteral | BooleanLiteral;
 
-keyword: String;
+keyword: Random | Generate | Length;
 
 emptyStatement: ';';
 
@@ -114,7 +114,7 @@ expressionSequence
   ;
 
 singleExpression
-  : singleExpression arguments                                  # FunctionExpression
+  : singleExpression arguments                                  # FunctionCallExpression
   | '!' singleExpression                                        # NotExpression
   | singleExpression ('*' | '/' | '%') singleExpression         # MultiplicativeExpression
   | singleExpression ('+' | '-') singleExpression               # AdditiveExpression
@@ -124,8 +124,8 @@ singleExpression
   | identifier                                                  # IdentifierExpression
   | literal                                                     # LiteralExpression
   | arrayLiteral                                                # ArrayLiteralExpression
-  | arrowFunctionParameters '=>' arrowFunctionBody              # ArrowFunction
-  | Length '(' singleExpression ')'                             # LengthFunction
+  | arrowFunction                                               # ArrowFunctionExpression
+  | keyword arguments                                           # KeywordCallExpression
   ;
 
 literal
@@ -147,6 +147,10 @@ formalFieldTypeList
 
 formalFieldType: singleTypeExpression identifier;
 
+arrowFunction
+  : arrowFunctionParameters '=>' arrowFunctionBody
+  ;
+
 arrowFunctionParameters: '(' formalParameterList? ')';
 
 arrowFunctionBody
@@ -163,5 +167,11 @@ formalParameterArg
   ;
 
 functionBody: fileElement* Return singleExpression eos;
+
+random
+  : Random '(' DecimalLiteral ',' DecimalLiteral (
+    ',' BooleanLiteral
+  )? ')'
+  ;
 
 eos: ';' | EOF;

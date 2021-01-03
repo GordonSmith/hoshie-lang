@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { HLFileScope } from "../hlcc/ast/fileScope";
+import { HLFileScope } from "../hlcc/cst/scopes/file";
 import { parse } from "../hlcc/parser";
 
 describe("hlcc/parser", () => {

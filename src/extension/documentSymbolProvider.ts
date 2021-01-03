@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { scopedLogger } from "@hpcc-js/util";
-import { HLFileScope } from "../hlcc/ast/fileScope";
+import { HLFileScope } from "../hlcc/cst/scopes/file";
 import { HLDiagnosticCollection } from "./diagnostic";
 
 const logger = scopedLogger("documentSymbolProvider.ts");

@@ -38,10 +38,12 @@ As: 'as';
 From: 'from';
 Return: 'return';
 
+//  Functions
 Length: 'length';
 
 //  Utilities
 Generate: 'generate';
+Random: 'random';
 UTest: 'utest';
 
 NullLiteral: 'null';

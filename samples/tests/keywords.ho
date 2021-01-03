@@ -1,0 +1,22 @@
+//  Length
+x = length([1,2,3]);
+utest(length([1,2,3]), 3);
+
+//  Random
+r = random();
+rA = r;
+rB = r;
+rC = r;
+utest(rA, r);
+utest(rB, r);
+utest(rC, r);
+
+r2 = random(1, 3);
+utest(r2 >= 1 && r2 < 3, true);
+r3 = random(1, 3, true);
+utest(r3 >= 1 && r3 < 3, true);
+
+//  Generate
+g1 = generate(() => random(), 10);
+
+g1;

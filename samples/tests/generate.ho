@@ -1,0 +1,2 @@
+d = generate((number i) => i, 10);
+

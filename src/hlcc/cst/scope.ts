@@ -1,8 +1,8 @@
 import { HLError, HLNode, removeQuotes } from "./node";
 import { Declaration, HLDeclaration } from "./declaration";
-import { AdditiveExpression, ArrayExpression, BooleanExpression, EqualityExpression, IdentifierExpression, LogicalExpression, MultiplicativeExpression, NotExpression, NumericExpression, RelationalExpression, StringExpression, isRHS, FunctionExpression, HLExpression, DataExpression } from "./expression";
-import { HLAction, InlineAction, Test } from "./action";
-import { LengthFunction, ArrowParamater, ArrowBody } from "./function";
+import { AdditiveExpression, ArrayExpression, BooleanExpression, EqualityExpression, IdentifierExpression, LogicalExpression, MultiplicativeExpression, NotExpression, NumericExpression, RelationalExpression, StringExpression, FunctionCallExpression, DataExpression } from "./expression";
+import { HLAction, Test } from "./action";
+import { GenerateFunction, LengthFunction, RandomFunction } from "./function";
 import { HLParserVisitor } from "../grammar/HLParserVisitor";
 import { ArrayType, BooleanType, NumberType, RowType, StringType, TypeDeclaration } from "./types";
 
@@ -154,14 +154,14 @@ export class HLScope extends HLParserVisitor {
         return args;
     }
 
-    visitFunctionExpression(ctx) {
-        const children = super.visitFunctionExpression(ctx);
+    visitFunctionCallExpression(ctx) {
+        const children = super.visitFunctionCallExpression(ctx);
         const [identifier, args] = children;
         const decl = this.resolve(identifier.id);
-        if (decl.type !== "function") {
-            this.appendError(decl, `${identifier.id} is not a function.`);
+        if (decl?.type !== "function") {
+            this.ctxError(ctx, `${identifier.id} is not a function.`);
         }
-        return new FunctionExpression(ctx, this, decl.expression as any, args);
+        return new FunctionCallExpression(ctx, this, decl?.expression as any, args);
     }
 
     visitNotExpression(ctx) {
@@ -249,20 +249,6 @@ export class HLScope extends HLParserVisitor {
         });
         return new ArrayExpression(ctx, this, literals?.filter(row => !!row));
     }
-
-    visitLengthFunction(ctx) {
-        const [, , expression] = super.visitLengthFunction(ctx);
-        if (!LengthFunction.hasLength(expression)) {
-            this.ctxError(ctx, "Expression does not have length");
-        }
-        return new LengthFunction(ctx, this, expression);
-    }
-
-    // visitGenerateFunction(ctx) {
-    //     const children = super.visitGenerateFunction(ctx);
-    //     const [] = children;
-    //     return children;
-    // }
 
     visitElementList(ctx) {
         const children = super.visitElementList(ctx);
@@ -371,13 +357,13 @@ export class HLScope extends HLParserVisitor {
     visitVariableInitialiser(ctx) {
         const children = super.visitVariableInitialiser(ctx);
         const [, expression, , asType] = children;
-        switch (expression.etype) {
+        switch (expression?.type) {
             case "data":
             case "data[]":
                 expression.typeInfo(asType?.type);
                 break;
             default:
-                if (asType && expression.type !== asType.eval()) {
+                if (asType && expression?.type !== asType.eval()) {
                     this.appendError(expression, `Mismatched types "${expression.type}" as "${asType.eval()}"`);
                 }
         }
@@ -398,5 +384,61 @@ export class HLScope extends HLParserVisitor {
         const test = new Test(ctx, this, actual, expected, msg?.getText());
         this._tests.push(test);
         return test;
+    }
+
+    //  Keywords  ---
+    visitKeywordCallExpression(ctx) {
+        const children = super.visitKeywordCallExpression(ctx);
+        const [[keyword], params] = children;
+        switch (keyword) {
+            case "length":
+                switch (params.length) {
+                    case 1:
+                        if (!LengthFunction.hasLength(params[0])) {
+                            this.ctxError(ctx, "Expression does not have length");
+                        }
+                        return new LengthFunction(ctx, this, params[0]);
+                    default:
+                        this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
+                }
+                break;
+            case "generate":
+                switch (params.length) {
+                    case 2:
+                        if (params[0].type && params[1].type === "number") {
+                            return new GenerateFunction(ctx, this, params[0], params[1]);
+                        } else {
+                            this.ctxError(ctx, `Invlid paramters, expected "any, number" got "${params[0].type}, ${params[1].type}".`);
+                        }
+                        break;
+                    default:
+                        this.ctxError(ctx, "Invalid number of paramaters, expected 2.");
+                }
+                break;
+            case "random":
+                switch (params.length) {
+                    case 0:
+                        return new RandomFunction(ctx, this);
+                    case 2:
+                        if (params[0].type === "number" && params[1].type === "number") {
+                            return new RandomFunction(ctx, this, params[0], params[1]);
+                        } else {
+                            this.ctxError(ctx, `Invlid paramters, expected "number, number" got "${params[0].type}, ${params[1].type}".`);
+                        }
+                        break;
+                    case 3:
+                        if (params[0].type === "number" && params[1].type === "number" && params[2].type === "boolean") {
+                            return new RandomFunction(ctx, this, params[0], params[1], params[2]);
+                        } else {
+                            this.ctxError(ctx, `Invlid paramters, expected "number, number, boolean" got "${params[0].type}, ${params[1].type}, ${params[2].type}".`);
+                        }
+                        break;
+                    default:
+                        this.ctxError(ctx, "Invalid number of paramaters, expected 0, 2 or 3.");
+                }
+                break;
+            default:
+                this.ctxError(ctx, `Unknown keyword "${keyword}"`);
+        }
     }
 }

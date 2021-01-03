@@ -1,4 +1,10 @@
-dimple001 = (number i) => i;
+simple = () => 42;
+simple2 = () => {
+    return 42;
+};
+
+nop = (number i) => i;
+utest(nop(42), 42);
 
 arrowAdd = (number a, number b, number c) => a + b + c;
 utest(arrowAdd(1, 2, 3), 6);

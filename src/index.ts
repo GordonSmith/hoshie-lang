@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import * as yargs from "yargs";
-import { HLFileScope } from "./hlcc/ast/fileScope";
+import { HLFileScope } from "./hlcc/cst/scopes/file";
 
 const argv = yargs
     .scriptName("hlcc")
@@ -23,11 +23,13 @@ switch (cmd) {
         hlFile.allErrors().forEach(row => {
             console.log(`${row.source}:${row.line}:${row.column} - ${row.severity} HO${row.code}: ${row.message}`);
         });
-
         break;
     case "run":
         console.log(`Running "${argv.file}"\n`);
         hlFile = new HLFileScope("", argv.file);
+        hlFile.allErrors().forEach(row => {
+            console.log(`${row.source}:${row.line}:${row.column} - ${row.severity} HO${row.code}: ${row.message}`);
+        });
         hlFile.allActions().forEach(row => {
             console.log(row.eval());
         });
@@ -35,6 +37,9 @@ switch (cmd) {
     case "test":
         console.log(`Testing "${argv.file}"\n`);
         hlFile = new HLFileScope("", argv.file);
+        hlFile.allErrors().forEach(row => {
+            console.log(`${row.source}:${row.line}:${row.column} - ${row.severity} HO${row.code}: ${row.message}`);
+        });
         const results = hlFile.allTests().map(row => row.test());
         console.log(results.join(""));
         break;

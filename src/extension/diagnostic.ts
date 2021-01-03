@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { HLError } from "../hlcc/ast/node";
+import { HLError } from "../hlcc/cst/node";
 
 let eclDiagnosticCollection: vscode.DiagnosticCollection;
 

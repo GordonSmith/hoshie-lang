@@ -1,7 +1,8 @@
 import { HLScope } from "./scope";
 import { ExpresionT, ExpresionType, HLError, HLNode } from "./node";
-import { HLFunctionScope } from "./functionScope";
+import { HLFunctionScope } from "./scopes/function";
 import { ArrayType, RowType } from "./types";
+import { HLDeclaration } from "./declaration";
 
 export interface RHS {
     type: ExpresionType;
@@ -303,10 +304,10 @@ export class ArrayExpression extends HLExpression {
     }
 }
 
-export class FunctionExpression extends HLExpression {
+export class FunctionCallExpression extends HLExpression {
 
     get type(): ExpresionType {
-        return this.func.returnType;
+        return this.func?.returnType;
     }
 
     constructor(ctx: any, scope: HLScope, readonly func: HLFunctionScope, readonly args: HLExpression[]) {
@@ -314,6 +315,55 @@ export class FunctionExpression extends HLExpression {
     }
 
     eval() {
-        return this.func.calc(this.args);
+        return this.func?.calc(this.args);
+    }
+}
+
+export class ArrowParamater extends HLNode implements RHS {
+
+    private _defaultExpression?: RHS;
+
+    get type(): ExpresionType {
+        return this._type;
+    }
+
+    constructor(ctx: any, readonly scope: HLScope, readonly _type: ExpresionType, readonly id: string, defaultExpression?: RHS) {
+        super(ctx);
+        this._defaultExpression = defaultExpression;
+    }
+
+    defaultExpression(): RHS | undefined;
+    defaultExpression(_: RHS | undefined): this;
+    defaultExpression(_?: RHS | undefined): this | RHS | undefined {
+        if (!arguments.length) return this._defaultExpression;
+        this._defaultExpression = _;
+        return this;
+    }
+
+    eval(): ExpresionT {
+        return this.defaultExpression()?.eval();
+    }
+
+    errors(): HLError[] {
+        return [];
+    }
+}
+
+export class ArrowBody extends HLNode {
+
+    get type(): ExpresionType {
+        return this.returnExpression.type;
+    }
+
+    constructor(ctx: any, readonly scope: HLScope, readonly items: HLDeclaration[], readonly returnExpression: RHS) {
+        super(ctx);
+    }
+
+    contains(line: number, column: number) {
+        if (line < this.ctx.start.line) return false;
+        if (line > this.ctx.stop.line) return false;
+        if (line === this.ctx.start.line && column < this.ctx.start.column) return false;
+        if (line === this.ctx.stop.line && column > this.ctx.stop.column) return false;
+        return true;
     }
 }

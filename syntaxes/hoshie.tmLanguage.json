@@ -14,6 +14,9 @@
             "include": "#keywords"
         },
         {
+            "include": "#support"
+        },
+        {
             "include": "#label"
         },
         {
@@ -47,7 +50,7 @@
         "keywords": {
             "patterns": [{
                     "name": "keyword.control.hoshie",
-                    "match": "\\b(if|while|for|return|as|from)\\b"
+                    "match": "\\b(return|as|from)\\b"
                 },
                 {
                     "name": "keyword.operator.comparison.hoshie",
@@ -75,13 +78,16 @@
                 {
                     "name": "keyword.operator.assignment.hoshie",
                     "match": "\\="
+                }
+            ]
+        },
+        "support": {
+            "patterns": [{
+                    "name": "support.function.hoshie",
+                    "match": "\\b(length|random)\\b"
                 },
                 {
-                    "name": "support.function.hoshie",
-                    "match": "\\b(length)\\b"
-                },
-                {
-                    "name": "support.function.hoshie",
+                    "name": "support.class.hoshie",
                     "match": "\\b(utest)\\b"
                 }
             ]

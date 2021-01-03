@@ -1,11 +1,11 @@
 import * as fs from "fs";
 import * as path from "path";
-import { parse, ParseResponse } from "../parser";
-import { hlError, HLError, removeQuotes } from "./node";
-import { Alias, HLDeclaration } from "./declaration";
-import { HLScope, Range } from "./scope";
-import { HLFunctionScope } from "./functionScope";
-import { HLAction, Test } from "./action";
+import { parse, ParseResponse } from "../../parser";
+import { hlError, HLError, removeQuotes } from "../node";
+import { Alias, HLDeclaration } from "../declaration";
+import { HLScope, Range } from "../scope";
+import { HLFunctionScope } from "./function";
+import { HLAction, Test } from "../action";
 
 const posix = (windowsPath) => windowsPath.replace(/^\\\\\?\\/, "").replace(/\\/g, "\/").replace(/\/\/+/g, "\/");
 
@@ -145,7 +145,7 @@ export class HLFileScope extends HLScope {
         return retVal;
     }
 
-    visitArrowFunction(ctx) {
+    visitArrowFunctionExpression(ctx) {
         const f = new HLFunctionScope(this.path, ctx, this);
         return f;
     }
