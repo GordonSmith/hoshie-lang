@@ -12,6 +12,8 @@ export interface Range {
     length: number
 }
 
+const isChildToken = (item: any) => typeof item === "string";
+
 export class HLScope extends HLParserVisitor {
 
     private _errors: HLError[] = [];
@@ -128,30 +130,10 @@ export class HLScope extends HLParserVisitor {
     }
 
     visitArguments(ctx) {
-        const children = super.visitArguments(ctx);
-        const args = [];
-        let argPos = 0;
-        let arg = undefined;
-        children.forEach(item => {
-            switch (item) {
-                case "[":
-                case "]":
-                    break;
-                case ",":
-                    args.push(arg);
-                    argPos++;
-                    arg = undefined;
-                    break;
-                default:
-                    if (Array.isArray(item)) {
-                        arg = item[0];
-                    }
-            }
-        });
-        if (children.length > 2) {
-            args.push(arg);
-        }
-        return args;
+        return super.visitArguments(ctx)
+            .filter(child => !isChildToken(child))
+            .map(child => child[0])
+            ;
     }
 
     visitFunctionCallExpression(ctx) {
@@ -389,56 +371,53 @@ export class HLScope extends HLParserVisitor {
     //  Keywords  ---
     visitKeywordCallExpression(ctx) {
         const children = super.visitKeywordCallExpression(ctx);
-        const [[keyword], params] = children;
-        switch (keyword) {
-            case "length":
-                switch (params.length) {
-                    case 1:
-                        if (!LengthFunction.hasLength(params[0])) {
-                            this.ctxError(ctx, "Expression does not have length");
-                        }
-                        return new LengthFunction(ctx, this, params[0]);
-                    default:
-                        this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
-                }
-                break;
-            case "generate":
-                switch (params.length) {
-                    case 2:
-                        if (params[0].type && params[1].type === "number") {
-                            return new GenerateFunction(ctx, this, params[0], params[1]);
-                        } else {
-                            this.ctxError(ctx, `Invlid paramters, expected "any, number" got "${params[0].type}, ${params[1].type}".`);
-                        }
-                        break;
-                    default:
-                        this.ctxError(ctx, "Invalid number of paramaters, expected 2.");
-                }
-                break;
-            case "random":
-                switch (params.length) {
-                    case 0:
-                        return new RandomFunction(ctx, this);
-                    case 2:
-                        if (params[0].type === "number" && params[1].type === "number") {
-                            return new RandomFunction(ctx, this, params[0], params[1]);
-                        } else {
-                            this.ctxError(ctx, `Invlid paramters, expected "number, number" got "${params[0].type}, ${params[1].type}".`);
-                        }
-                        break;
-                    case 3:
-                        if (params[0].type === "number" && params[1].type === "number" && params[2].type === "boolean") {
-                            return new RandomFunction(ctx, this, params[0], params[1], params[2]);
-                        } else {
-                            this.ctxError(ctx, `Invlid paramters, expected "number, number, boolean" got "${params[0].type}, ${params[1].type}, ${params[2].type}".`);
-                        }
-                        break;
-                    default:
-                        this.ctxError(ctx, "Invalid number of paramaters, expected 0, 2 or 3.");
-                }
-                break;
-            default:
-                this.ctxError(ctx, `Unknown keyword "${keyword}"`);
+        const keyword = ctx.keyword();
+        const [, params] = children;
+        if (keyword.Length()) {
+            switch (params.length) {
+                case 1:
+                    if (!LengthFunction.hasLength(params[0])) {
+                        this.ctxError(ctx, "Expression does not have length");
+                    }
+                    return new LengthFunction(ctx, this, params[0]);
+                default:
+                    this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
+            }
+        } else if (keyword.Generate()) {
+            switch (params.length) {
+                case 2:
+                    if (params[0].type && params[1].type === "number") {
+                        return new GenerateFunction(ctx, this, params[0], params[1]);
+                    } else {
+                        this.ctxError(ctx, `Invlid paramters, expected "any, number" got "${params[0].type}, ${params[1].type}".`);
+                    }
+                    break;
+                default:
+                    this.ctxError(ctx, "Invalid number of paramaters, expected 2.");
+            }
+        } else if (keyword.Random()) {
+            switch (params.length) {
+                case 0:
+                    return new RandomFunction(ctx, this);
+                case 2:
+                    if (params[0].type === "number" && params[1].type === "number") {
+                        return new RandomFunction(ctx, this, params[0], params[1]);
+                    } else {
+                        this.ctxError(ctx, `Invlid paramters, expected "number, number" got "${params[0].type}, ${params[1].type}".`);
+                    }
+                    break;
+                case 3:
+                    if (params[0].type === "number" && params[1].type === "number" && params[2].type === "boolean") {
+                        return new RandomFunction(ctx, this, params[0], params[1], params[2]);
+                    } else {
+                        this.ctxError(ctx, `Invlid paramters, expected "number, number, boolean" got "${params[0].type}, ${params[1].type}, ${params[2].type}".`);
+                    }
+                    break;
+                default:
+                    this.ctxError(ctx, "Invalid number of paramaters, expected 0, 2 or 3.");
+            }
+        } else {
+            this.ctxError(ctx, `Unknown keyword "${keyword} "`);
         }
     }
 }

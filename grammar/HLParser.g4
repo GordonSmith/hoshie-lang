@@ -168,10 +168,4 @@ formalParameterArg
 
 functionBody: fileElement* Return singleExpression eos;
 
-random
-  : Random '(' DecimalLiteral ',' DecimalLiteral (
-    ',' BooleanLiteral
-  )? ')'
-  ;
-
 eos: ';' | EOF;

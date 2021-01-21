@@ -8,7 +8,7 @@ _A new data centric programming language._
 3. `git clone git@github.com:AlexSmith/hoshie-lang.git`
 4. `cd hoshie-lang`
 5. `npm install`
-6. `npm install install-deps`
+6. `npm run install-deps`
 7. Open folder in vscode
 8. Run build task:  `Ctrl + Shift + B`
 9. Launch debug session:  `F5`
