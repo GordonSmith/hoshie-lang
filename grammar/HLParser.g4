@@ -105,9 +105,12 @@ optionalElementList
   : ','* singleExpression? (','+ singleExpression)* ','* // Yes, everything is optional
   ;
 
-arguments: '(' (argument? (',' argument?)*) ')';
+arguments
+  : '(' ')' // Avoid single undefined argument
+  | '(' (optionalArgument (',' optionalArgument)*) ')'
+  ;
 
-argument: singleExpression | identifier;
+optionalArgument: (singleExpression | identifier)?;
 
 expressionSequence
   : singleExpression (',' singleExpression)*

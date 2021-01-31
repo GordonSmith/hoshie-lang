@@ -130,9 +130,9 @@ export class HLScope extends HLParserVisitor {
     }
 
     visitArguments(ctx) {
-        return super.visitArguments(ctx)
-            .filter(child => !isChildToken(child))
-            .map(child => child[0])
+        const children = super.visitArguments(ctx);
+        return children.filter(child => !isChildToken(child))
+            .map(child => Array.isArray(child) ? child[0] : child)
             ;
     }
 
@@ -166,11 +166,11 @@ export class HLScope extends HLParserVisitor {
     visitAdditiveExpression(ctx) {
         const [lhs, , rhs] = super.visitAdditiveExpression(ctx);
         if (lhs.type === "number" && rhs.type === "number") {
-        } else if (lhs.type === "string" && rhs.type === "string" && !ctx.Minus()) {
+        } else if (lhs.type === "string" && rhs.type === "string" && !!ctx.Plus()) {
         } else {
             this.ctxError(ctx, "Additive Expression is not valid");
         }
-        return new AdditiveExpression(ctx, this, lhs, rhs, !!ctx.Minus() ? "-" : "+");
+        return new AdditiveExpression(ctx, this, lhs, rhs, !!ctx.Plus() ? "+" : "-");
     }
 
     visitRelationalExpression(ctx) {

@@ -1,3 +1,19 @@
+a = 5;
+b = 7;
+c = 11;
+d = 13;
+xxx = 13;
+scopeTestAdd = (number a = xxx, number b, number c) => {
+    xxx = true;
+    d = "Hello";
+    e = a;
+    return a + b + c;
+};
+utest(scopeTestAdd(, 2, 3), 18);
+utest(scopeTestAdd(1, 2, 3), 6);
+
+
+
 simple = () => 42;
 simple2 = () => {
     return 42;
@@ -14,16 +30,6 @@ bodyAdd = (number a, number b, number c) => {
 };
 utest(bodyAdd(1, 2, 3), 6);
 
-a = 5;
-b = 7;
-c = 11;
-d = 13;
-xxx = 13;
-scopeTestAdd = (number a = xxx, number b, number c) => {
-    xxx = true;
-    d = "Hello";
-    e = a;
-    return a + b + c;
-};
-utest(scopeTestAdd(1, 2, 3), 6);
-utest(scopeTestAdd(, 2, 3), 18);
+simple3 = (number mol = 42) => mol;
+utest(simple3(), 42);
+utest(simple3(43), 43);
