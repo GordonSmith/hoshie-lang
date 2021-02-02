@@ -1,6 +1,9 @@
+import {} from "./booleans";
+import {} from "./strings";
+import {} from "./numbers";
+
 import {} from "./keywords";
 import {} from "./actions";
-import {} from "./booleans";
 import {} from "./data";
 import {} from "./functions";
 import {} from "./optionalFunctionParams";

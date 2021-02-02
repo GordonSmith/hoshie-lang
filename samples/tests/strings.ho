@@ -1,0 +1,12 @@
+hello = "Hello";
+and = "and";
+welcome = "Welcome";
+
+utest(hello, "Hello");
+utest(and, "and");
+utest(welcome, "Welcome");
+utest(hello != "hello", true);
+
+utest(hello+and+welcome, "Hello"+and+"Welcome");
+utest(hello+and+welcome, "Hello"+"and"+"Welcome");
+utest(hello+and+welcome, "HelloandWelcome");
