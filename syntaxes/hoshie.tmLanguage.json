@@ -4,7 +4,8 @@
         "ho"
     ],
     "name": "Hoshie",
-    "patterns": [{
+    "patterns": [
+        {
             "include": "#control-statement"
         },
         {
@@ -31,13 +32,16 @@
     ],
     "repository": {
         "control-statement": {
-            "patterns": [{
-                "name": "keyword.control.export.hoshie",
-                "match": "\\b(import|export)\\b"
-            }]
+            "patterns": [
+                {
+                    "name": "keyword.control.export.hoshie",
+                    "match": "\\b(import|export)\\b"
+                }
+            ]
         },
         "entities": {
-            "patterns": [{
+            "patterns": [
+                {
                     "name": "entity.name.type",
                     "match": "\\b(boolean|number|string)\\b"
                 },
@@ -48,7 +52,8 @@
             ]
         },
         "keywords": {
-            "patterns": [{
+            "patterns": [
+                {
                     "name": "keyword.control.hoshie",
                     "match": "\\b(return|as|from)\\b"
                 },
@@ -82,7 +87,8 @@
             ]
         },
         "support": {
-            "patterns": [{
+            "patterns": [
+                {
                     "name": "support.function.hoshie",
                     "match": "\\b(length|random)\\b"
                 },
@@ -93,7 +99,8 @@
             ]
         },
         "label": {
-            "patterns": [{
+            "patterns": [
+                {
                     "begin": "([_$[:alpha:]][_$[:alnum:]]*)\\s*(:)(?=\\s*\\{)",
                     "beginCaptures": {
                         "1": {
@@ -104,9 +111,11 @@
                         }
                     },
                     "end": "(?<=\\})",
-                    "patterns": [{
-                        "include": "#decl-block"
-                    }]
+                    "patterns": [
+                        {
+                            "include": "#decl-block"
+                        }
+                    ]
                 },
                 {
                     "match": "([_$[:alpha:]][_$[:alnum:]]*)\\s*(:)",
@@ -122,7 +131,8 @@
             ]
         },
         "constants": {
-            "patterns": [{
+            "patterns": [
+                {
                     "name": "constant.numeric.hoshie",
                     "match": "\\b(\\d+(\\.\\d+)?)\\b"
                 },
@@ -136,13 +146,16 @@
             "name": "string.quoted.double.hoshie",
             "begin": "\"",
             "end": "\"",
-            "patterns": [{
-                "name": "constant.character.escape.hoshie",
-                "match": "\\\\."
-            }]
+            "patterns": [
+                {
+                    "name": "constant.character.escape.hoshie",
+                    "match": "\\\\."
+                }
+            ]
         },
         "comments": {
-            "patterns": [{
+            "patterns": [
+                {
                     "name": "comment.block.hoshie",
                     "begin": "/\\*",
                     "end": "\\*/"
@@ -167,9 +180,11 @@
                     "name": "punctuation.definition.block.hoshie"
                 }
             },
-            "patterns": [{
-                "include": "#statements"
-            }]
+            "patterns": [
+                {
+                    "include": "#statements"
+                }
+            ]
         }
     }
 }
