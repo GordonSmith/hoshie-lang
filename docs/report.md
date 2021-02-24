@@ -37,6 +37,15 @@ The overall project can be broken down to several key functional areas:
 * Declarative or Procedural?
     * Pros:
     * Cons:
+* Scoping rules:
+    * Files
+    * Functions
+* Visibility rules:
+    * Forward declarations
+* Operators
+* Declarations
+* Actions
+* Builtin functions
 
 ## Compiler
 
@@ -73,13 +82,13 @@ There are some common tools to assist in compiler development, these are known a
 * IntelliJ:  IDE focusing on Java Development
     * Pros:
     * Cons:
+* Eclipse:  Designed to be an extensible IDE written in Java
+    * Pros:
+    * Cons:
 * Atom:  "A hackable text editor for the 21st Century"  
     * Pros:
     * Cons:
 * VS Code:  Designed from the start to be an unopinionated modern and extensible editor / IDE written in TypeScript.  Borrowed heavily from Atoms ideology 
-    * Pros:
-    * Cons:
-* Eclipse:  Designed to be an extensible IDE written in Java
     * Pros:
     * Cons:
 
@@ -127,21 +136,38 @@ The key areas for the language are:
 * Lexer:  The set of known tokens, keywords and operators
 * Grammar:  Defines how the tokens can be structured in a high level way
 
+## Design Conclusion
+
+Primary development language would be TypeScript and the targetted runtime environment would NodeJS / Browser (JavaScript). The key factors in this decision were:
+
+* Antlr supports generating JavaScript (and experimental TypeScript) parsing and visitor code.
+* VS Code extension authoring is written in TypeScript.
+* NodeJS and Browser environments are cross-platform and widley available.
+
 # Implementation
 
 ## Development Environment
 _The following is a description of the development environment used, given the nature of the project setting up an optimised environment served as valuable research as well as expediting actual development._
 
-* [Visual Studio Code](https://code.visualstudio.com/) + Extensions:
-    * [ANTLR4 grammar syntax support](https://marketplace.visualstudio.com/items?itemName=mike-lischke.vscode-antlr4)
-    * [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
-* [TypeScript](https://www.typescriptlang.org/)
-* [NodeJS](https://nodejs.org/en/)
+The following development tools were used:
+
+* [NodeJS](https://nodejs.org/en/):  Cross-platform JavaScript runtime environment for executing JavaScript outside of a web browser.  Has a large ecosystem of third party libraries and a popular package manager to define versioned dependencies.
+* [TypeScript](https://www.typescriptlang.org/):  An extension to the JavaScript language, TypeScript adds static typing and transpiling capabilities making large scale development of JavaScript more robust.
+* [Antlr](https://www.antlr.org/):  A compiler compiler which takes Lexer and grammar definition files and generates parsers, abstract syntax trees with associated walkers and visitors.
+* [Mocha](https://mochajs.org/):  JavaScript test framework.
+* [Chai](https://www.chaijs.com/):  A JAvaScript assertion library, commonly used in conjunction with Mocha.
+* [rimraf](https://github.com/isaacs/rimraf):  Emulated the "rm -rf" command line in JavaScript.  Used for running "clean" commands.
+* [npm-run-all](https://github.com/mysticatea/npm-run-all):  Allows sequential and parallel execution of "npm run" commands.  Used for "build-all" type commands.
+* [watch](https://github.com/mikeal/watch):  Monitors a folder for changes, used to detect when files change so they can be automatically recompiled.
+* [pandoc](https://pandoc.org/):  A universal document converted, used to convert markdown to Microsoft Word formats (and back again), allow initial report writing to be done in markdown.
+* [Visual Studio Code](https://code.visualstudio.com/):  Development environment, including the following extensions:
+    * [ANTLR4 grammar syntax support](https://marketplace.visualstudio.com/items?itemName=mike-lischke.vscode-antlr4):  IDE support for Antlr lexer and grammar files.
+    * [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint):  IDE support for TypeScript linting tools.
 
 ## Syntax
 
 ## Compiler
-_Antlr is a modern compiler compiler, initially designed to generate Java based compilers has been extended to support many languages, including JavaScript._
+_Antlr is a modern compiler compiler, initially designed to generate Java based compilers has been extended to support many languages, including JavaScript and experimental TypeScript._
 
 ## Integrated Development Environment
 _A critical part of any programming language is good support for associated development tools, VS Code is currently one of the most popular cross platform, general purpose programming IDEs available.  https://code.visualstudio.com/_
