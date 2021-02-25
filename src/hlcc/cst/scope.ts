@@ -143,7 +143,7 @@ export class HLScope extends HLParserVisitor {
         if (decl?.type !== "function") {
             this.ctxError(ctx, `${identifier.id} is not a function.`);
         }
-        return new FunctionCallExpression(ctx, this, decl?.expression as any, args);
+        return new FunctionCallExpression(ctx, this, identifier.id, decl?.expression as any, args);
     }
 
     visitNotExpression(ctx) {

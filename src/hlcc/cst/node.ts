@@ -41,7 +41,7 @@ export class HLNode implements Range {
         return retVal;
     }
 
-    constructor(protected ctx: any) {
+    constructor(readonly ctx: any) {
     }
 
     createError(source: string, message: string): ErrorListenerError {

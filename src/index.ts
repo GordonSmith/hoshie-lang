@@ -2,10 +2,12 @@
 
 import * as yargs from "yargs";
 import { HLFileScope } from "./hlcc/cst/scopes/file";
+import { generate } from "./hlcc/codeGen/js";
 
 const argv = yargs
     .scriptName("hlcc")
     .command("check <file>", "Syntax check file")
+    .command("compile <file>", "Execute file")
     .command("run <file>", "Execute file")
     .command("test <file>", "Unit test file")
     .help()
@@ -23,6 +25,14 @@ switch (cmd) {
         hlFile.allErrors().forEach(row => {
             console.log(`${row.source}:${row.line}:${row.column} - ${row.severity} HO${row.code}: ${row.message}`);
         });
+        break;
+    case "compile":
+        console.log(`Compiling "${argv.file}"\n`);
+        hlFile = new HLFileScope("", argv.file);
+        hlFile.allErrors().forEach(row => {
+            console.log(`${row.source}:${row.line}:${row.column} - ${row.severity} HO${row.code}: ${row.message}`);
+        });
+        generate(hlFile);
         break;
     case "run":
         console.log(`Running "${argv.file}"\n`);

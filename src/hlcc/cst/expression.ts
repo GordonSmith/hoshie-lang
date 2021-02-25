@@ -245,7 +245,7 @@ export class StringExpression extends HLExpression {
 
 export class DataExpression extends HLExpression {
 
-    protected _typeInfo: RowType;
+    rowType: RowType;
 
     get type(): ExpresionType {
         return "data";
@@ -257,14 +257,14 @@ export class DataExpression extends HLExpression {
 
     typeInfo(_: RowType) {
         if (_ instanceof RowType) {
-            this._typeInfo = _;
+            this.rowType = _;
         } else {
         }
     }
 
     eval(): string {
         return "{ " + this.fields.map((exp, i) => {
-            const id = this._typeInfo?.fields[i]?.id || i;
+            const id = this.rowType?.fields[i]?.id || i;
             const isString = exp.type === "string";
             return `${id}: ${isString ? `"${exp.eval()}"` : exp.eval()}`;
         }).join(", ") + " }";
@@ -273,34 +273,34 @@ export class DataExpression extends HLExpression {
 
 export class ArrayExpression extends HLExpression {
 
-    protected _typeInfo: ArrayType;
+    rowType: ArrayType;
 
     get type(): ExpresionType {
-        return (this.value?.length ? this.value[0].type + "[]" : "unknown[]") as ExpresionType;
+        return (this.values?.length ? this.values[0].type + "[]" : "unknown[]") as ExpresionType;
     }
 
-    constructor(ctx: any, scope: HLScope, readonly value: (BooleanExpression | NumericExpression | StringExpression | DataExpression)[]) {
+    constructor(ctx: any, scope: HLScope, readonly values: (BooleanExpression | NumericExpression | StringExpression | DataExpression)[]) {
         super(ctx, scope);
     }
 
     typeInfo(_: any) {
         if (_ instanceof ArrayType) {
-            this._typeInfo = _;
+            this.rowType = _;
         } else {
         }
     }
 
     eval() {
         if (this.type === "string[]") {
-            return (this.value as any[]).map(v => `'${v.eval()}'`);
+            return (this.values as any[]).map(v => `'${v.eval()}'`);
         } else if (this.type === "data[]") {
-            return "[ " + (this.value as DataExpression[]).map(v => {
-                v.typeInfo(this._typeInfo?.rowType as RowType);
+            return "[ " + (this.values as DataExpression[]).map(v => {
+                v.typeInfo(this.rowType?.rowType as RowType);
                 return v.eval();
             }).join(", ") + " ]";
         }
 
-        return (this.value as any[]).map(v => v.eval());
+        return (this.values as any[]).map(v => v.eval());
     }
 }
 
@@ -310,7 +310,7 @@ export class FunctionCallExpression extends HLExpression {
         return this.func?.returnType;
     }
 
-    constructor(ctx: any, scope: HLScope, readonly func: HLFunctionScope, readonly args: HLExpression[]) {
+    constructor(ctx: any, scope: HLScope, readonly id: string, readonly func: HLFunctionScope, readonly args: HLExpression[]) {
         super(ctx, scope);
     }
 
