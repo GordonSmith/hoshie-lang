@@ -8,7 +8,7 @@
         "install-deps": "run-s install-os-deps",
         "clean": "rimraf ./grammar/.antlr ./grammar/*.txt ./src/hlcc/grammar/*.{interp,js,ts,tokens} ./lib-* ./build ./dist",
         "grammar-generate-ts": "antlr4ts -o ./src/hlcc/grammar -visitor ./grammar/HL.g4",
-        "grammar-generate": "wsl -e antlr4 -Dlanguage=JavaScript -o ./src/hlcc -lib ./src/hlcc/grammar -visitor ./grammar/HLLexer.g4 ./grammar/HLParser.g4 ",
+        "grammar-generate": "wsl -e antlr4 -Dlanguage=JavaScript -o ./src/hlcc -lib ./src/hlcc/grammar -visitor ./grammar/HLLexer.g4 ./grammar/HLParser.g4",
         "grammar-watch": "watch \"npm run grammar-generate\" ./grammar",
         "compile": "tsc",
         "compile-watch": "run-s \"compile -- -w\"",
@@ -27,6 +27,7 @@
     "license": "MIT",
     "dependencies": {
         "@hpcc-js/util": "^2.27.0",
+        "@hpcc-js/dataflow": "^3.0.1",
         "antlr4": "~4.7.0",
         "yargs": "^16.1.1"
     },

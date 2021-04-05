@@ -2,6 +2,7 @@ lexer grammar HLLexer
   ;
 // https://github.com/antlr/grammars-v4/blob/master/javascript/javascript/JavaScriptLexer.g4
 
+//  Symbols
 SemiColon: ';';
 OpenBracket: '[';
 CloseBracket: ']';
@@ -26,12 +27,13 @@ NotEquals: '!=';
 And: '&&';
 Or: '||';
 Arrow: '=>';
+Link: '->';
+Dot: '.';
 
 //  Keywords
 Boolean: 'boolean';
 Number: 'number';
 String: 'string';
-
 Export: 'export';
 Import: 'import';
 As: 'as';
@@ -40,38 +42,37 @@ Return: 'return';
 
 //  Functions
 Length: 'length';
-
-//  Utilities
 Generate: 'generate';
 Random: 'random';
 UTest: 'utest';
 
+//  Activities
+Filter: 'filter';
+Map: 'map';
+Sort: 'sort';
+FirstN: 'firstN';
+
+//  Sensors
+Count: 'count';
+Mean: 'mean';
+
+//  Literals
 NullLiteral: 'null';
-
 BooleanLiteral: 'true' | 'false';
-
-IdentifierType: IdentifierTypeStart IdentifierPart*;
-
-Identifier: IdentifierStart IdentifierPart*;
 
 DecimalLiteral
   : DecimalIntegerLiteral '.' DecimalDigit* ExponentPart?
   | '.' DecimalDigit+ ExponentPart?
   | DecimalIntegerLiteral ExponentPart?
   ;
-
-HexIntegerLiteral: '0' [xX] HexDigit+;
-
-OctalIntegerLiteral: {!this.strictMode}? '0' OctalDigit+;
-
 fragment DecimalDigit: [0-9];
-
-fragment HexDigit: [0-9a-fA-F];
-
-fragment OctalDigit: [0-7];
-
 fragment DecimalIntegerLiteral: '0' | [1-9] DecimalDigit*;
 
+HexIntegerLiteral: '0' [xX] HexDigit+;
+fragment HexDigit: [0-9a-fA-F];
+
+OctalIntegerLiteral: {!this.strictMode}? '0' OctalDigit+;
+fragment OctalDigit: [0-7];
 fragment ExponentPart: [eE] [+-]? DecimalDigit+;
 
 StringLiteral
@@ -81,6 +82,9 @@ StringLiteral
   )
   ;
 
+//  Identifier
+IdentifierType: IdentifierTypeStart IdentifierPart*;
+Identifier: IdentifierStart IdentifierPart*;
 fragment IdentifierPart
   : [_]
   | [a-zA-Z]
@@ -93,6 +97,7 @@ fragment IdentifierTypeStart: [A-Z];
 
 fragment IdentifierStart: [_] | [a-z];
 
+//  Strings
 fragment DoubleStringCharacter
   : ~ ["\\\r\n]
   | '\\' EscapeSequence
@@ -121,6 +126,7 @@ fragment EscapeCharacter
   | [xu]
   ;
 
+//  Other
 fragment LineContinuation: '\\' [\r\n\u2028\u2029];
 
 fragment CharacterEscapeSequence

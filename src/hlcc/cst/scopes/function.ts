@@ -5,15 +5,15 @@ import { Declaration } from "../declaration";
 
 export class HLFunctionScope extends HLScope implements RHS {
 
-    private _params: ArrowParamater[] = [];
-    private _body: ArrowBody;
+    params: ArrowParamater[] = [];
+    body: ArrowBody;
 
     get type(): ExpresionType {
         return "function";
     }
 
     get returnType(): ExpresionType {
-        return this._body?.returnExpression?.type;
+        return this.body?.returnExpression?.type;
     }
 
     constructor(readonly path: string, readonly ctx, readonly paramsScope: HLScope) {
@@ -22,19 +22,19 @@ export class HLFunctionScope extends HLScope implements RHS {
     }
 
     eval(): ExpresionT {
-        return this._body?.returnExpression?.eval();
+        return this.body?.returnExpression?.eval();
     }
 
     calc(args: HLExpression[]): ExpresionT {
-        const defaultExpressions = this._params.map(p => p.defaultExpression());
-        this._params.forEach((param, i) => param.defaultExpression(args[i] || param.defaultExpression()));
-        const retVal = this._body?.returnExpression?.eval();
-        this._params.forEach((param, i) => param.defaultExpression(defaultExpressions[i]));
+        const defaultExpressions = this.params.map(p => p.defaultExpression());
+        this.params.forEach((param, i) => param.defaultExpression(args[i] || param.defaultExpression()));
+        const retVal = this.body?.returnExpression?.eval();
+        this.params.forEach((param, i) => param.defaultExpression(defaultExpressions[i]));
         return retVal;
     }
 
     contains(line: number, column: number) {
-        return this._body.contains(line, column);
+        return this.body.contains(line, column);
     }
 
     //  Visitors  ---
@@ -42,7 +42,7 @@ export class HLFunctionScope extends HLScope implements RHS {
     visitArrowFunctionExpression(ctx) {
         const children = super.visitArrowFunctionExpression(ctx);
         const [[_, _1, body]] = children;
-        this._body = body;
+        this.body = body;
         return children;
     }
 
@@ -50,8 +50,8 @@ export class HLFunctionScope extends HLScope implements RHS {
         const children = this.paramsScope.visitFormalParameterArg(ctx);
         const [, , , expression] = children;
         const id = ctx.identifier();
-        const rhs = new ArrowParamater(ctx, this, ctx.singleTypeExpression().getText(), id.getText(), expression);
-        this._params.push(rhs);
+        const rhs = new ArrowParamater(ctx, this.paramsScope, this, ctx.singleTypeExpression().getText(), id.getText(), expression);
+        this.params.push(rhs);
         const decl = new Declaration(ctx, this, id.getText(), rhs);
         this.appendDeclaration(ctx, id.getText(), decl);
         return undefined;
@@ -64,7 +64,10 @@ export class HLFunctionScope extends HLScope implements RHS {
             return new ArrowBody(ctx, this, [], items[0]);
         }
         //  functionBody, last item is return
-        const returnExpression = items[1].pop();
+        let returnExpression;
+        while (!returnExpression) {
+            returnExpression = items[1].pop();
+        }
         return new ArrowBody(ctx, this, items[1], returnExpression);
     }
 

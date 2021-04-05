@@ -91,15 +91,26 @@ exportFromBlock
 
 identifierName: identifier | reservedWord;
 
-identifier: Identifier;
+identifier: Identifier ('.'+ Identifier)*;
 
 reservedWord: keyword | NullLiteral | BooleanLiteral;
 
-keyword: Random | Generate | Length;
+activity: Filter | Map | Sort | FirstN;
+
+sensor: Count | Mean;
+
+keyword: Generate | Random | Length | activity | sensor;
 
 emptyStatement: ';';
 
 elementList: singleExpression (','+ singleExpression)*;
+
+pipe: pipeItem '->' pipeItem ('->'+ pipeItem)*;
+
+pipeItem
+  : identifier        # PipeIdentifierExpression
+  | keyword arguments # PipekeywordExpression
+  ;
 
 optionalElementList
   : ','* singleExpression? (','+ singleExpression)* ','* // Yes, everything is optional
@@ -128,6 +139,7 @@ singleExpression
   | literal                                                     # LiteralExpression
   | arrayLiteral                                                # ArrayLiteralExpression
   | arrowFunction                                               # ArrowFunctionExpression
+  | pipe                                                        # PipeExpression
   | keyword arguments                                           # KeywordCallExpression
   ;
 

@@ -78,7 +78,7 @@ export class TypeDeclaration extends HLType {
         return this.rhs.type;
     }
 
-    constructor(ctx: any, scope: HLScope, readonly id: string, private rhs: HLType) {
+    constructor(ctx: any, scope: HLScope, readonly id: string, readonly rhs: HLType) {
         super(ctx, scope);
         if (!(rhs instanceof HLType)) {
 

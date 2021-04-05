@@ -1,8 +1,8 @@
 import { HLScope } from "./scope";
 import { ExpresionT, ExpresionType, HLError, HLNode } from "./node";
 import { HLFunctionScope } from "./scopes/function";
-import { ArrayType, RowType } from "./types";
-import { HLDeclaration } from "./declaration";
+import { ArrayType, HLType, RowType, TypeDeclaration } from "./types";
+import { Declaration, HLDeclaration } from "./declaration";
 
 export interface RHS {
     type: ExpresionType;
@@ -269,6 +269,18 @@ export class DataExpression extends HLExpression {
             return `${id}: ${isString ? `"${exp.eval()}"` : exp.eval()}`;
         }).join(", ") + " }";
     }
+
+    resolve(id: string) {
+        //  TODO nested scopes
+        let retVal;
+        this.rowType?.fields.some((rowType, idx) => {
+            if (rowType.id === id) {
+                retVal = { expression: this.fields[idx] };
+                return true;
+            }
+        });
+        return retVal;
+    }
 }
 
 export class ArrayExpression extends HLExpression {
@@ -319,6 +331,17 @@ export class FunctionCallExpression extends HLExpression {
     }
 }
 
+class FutureExpression extends HLExpression {
+
+    get type(): ExpresionType {
+        return this.fieldType.eval();
+    }
+
+    constructor(ctx: any, scope: HLScope, readonly fieldType: TypeDeclaration) {
+        super(ctx, scope);
+    }
+}
+
 export class ArrowParamater extends HLNode implements RHS {
 
     private _defaultExpression?: RHS;
@@ -327,7 +350,7 @@ export class ArrowParamater extends HLNode implements RHS {
         return this._type;
     }
 
-    constructor(ctx: any, readonly scope: HLScope, readonly _type: ExpresionType, readonly id: string, defaultExpression?: RHS) {
+    constructor(ctx: any, readonly outerScope: HLScope, readonly innerScope: HLScope, readonly _type: ExpresionType, readonly id: string, defaultExpression?: RHS) {
         super(ctx);
         this._defaultExpression = defaultExpression;
     }
@@ -347,6 +370,19 @@ export class ArrowParamater extends HLNode implements RHS {
     errors(): HLError[] {
         return [];
     }
+
+    resolve(id: string) {
+        //  TODO nested scopes
+        let retVal;
+        const type = this.outerScope.types[this._type];
+        (type?.rhs as RowType)?.fields.some((rowType, idx) => {
+            if (rowType.id === id) {
+                retVal = { expression: new FutureExpression(this.ctx, this.outerScope, rowType) };
+                return true;
+            }
+        });
+        return retVal;
+    }
 }
 
 export class ArrowBody extends HLNode {
@@ -365,5 +401,20 @@ export class ArrowBody extends HLNode {
         if (line === this.ctx.start.line && column < this.ctx.start.column) return false;
         if (line === this.ctx.stop.line && column > this.ctx.stop.column) return false;
         return true;
+    }
+}
+
+export class PipeExpression extends HLExpression {
+
+    get type(): ExpresionType {
+        return "function";
+    }
+
+    constructor(ctx: any, scope: HLScope, readonly items: HLExpression[]) {
+        super(ctx, scope);
+    }
+
+    eval() {
+        return [];
     }
 }

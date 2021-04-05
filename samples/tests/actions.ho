@@ -10,6 +10,13 @@ haw;
 
 arr = ["Hello", "and", "Welcome"];
 
+add2 = (number a = 22, number b = 33) => a + b;
+add2(, );
+add2(2, );
+add2(, 3);
+add2(2, 3);
+
+
 three = () => 1 + 2;
 three();
 add = (number a, number b) => a + b;

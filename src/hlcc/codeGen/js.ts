@@ -1,43 +1,67 @@
-import { AdditiveExpression, ArrayExpression, DataExpression, FunctionCallExpression, IdentifierExpression, NumericExpression, StringExpression } from "../cst/expression";
-import { GenerateFunction } from "../cst/function";
+import * as os from "os";
+import * as path from "path";
+import * as fs from "fs";
+import { AdditiveExpression, ArrayExpression, ArrowBody, ArrowParamater, DataExpression, FunctionCallExpression, IdentifierExpression, NumericExpression, PipeExpression, RelationalExpression, StringExpression } from "../cst/expression";
+import { CountFunction, FilterFunction, FirstNFunction, GenerateFunction, RandomFunction, SortFunction } from "../cst/function";
+import { HLScope } from "../cst/scope";
 import { HLFileScope } from "../cst/scopes/file";
 import { HLFunctionScope } from "../cst/scopes/function";
 import { RowType } from "../cst/types";
 
-class JSWriter {
-    decl: { [id: string]: string } = {};
-    buffer: string[] = [];
+type Declaration = { [id: string]: string };
+type FileContent = { [path: string]: { declarations: Declaration, actions: string[] } };
 
-    append(line: string) {
-        this.buffer.push(line);
+class JSWriter {
+    fileContent: FileContent = {};
+
+    append(line: string, path: string) {
+        if (!this.fileContent[path]) {
+            this.fileContent[path] = { declarations: {}, actions: [] };
+        }
+        this.fileContent[path].actions.push(line);
     }
 
-    outputDecl() {
+    outputDecl(path: string) {
         const retVal: string[] = [];
-        for (const key in this.decl) {
-            retVal.push(`const ${key} = ${this.decl[key]};`);
-        }
+        for (const decl in this.fileContent[path].declarations) {
+            retVal.push(`const ${decl} = ${this.fileContent[path].declarations[decl]};`);
+            }
         return retVal.join("\n");
     }
 
-    outputBuffer() {
-        return this.buffer.join("\n");
+    outputBuffer(path: string) {
+        return this.fileContent[path].actions.join("\n");
     }
 
     output() {
-        return `\
-import * as df from "@hpcc-js/dataflow";
+        const retVal: string[] = [];
+        for (const hoPath in this.fileContent) {
+            const outPath = hoPath.split(".");
+            outPath.pop();
+            outPath.push("js");
+            const jsPath = path.join("out-js", outPath.join("."));
+            retVal.push(`// ${jsPath}`);
+            const content = `\
+/* eslint-disable */
+const df = require("@hpcc-js/dataflow");
 
-${this.outputDecl()}
+${this.outputDecl(hoPath)}
 
-${this.outputBuffer()}
+${this.outputBuffer(hoPath)}
 `;
+            fs.mkdirSync(path.dirname(jsPath), { recursive: true });
+            fs.writeFileSync(jsPath, content);
+            retVal.push(content);
+        }
+        return retVal.join("\n");
     }
 
     generate(row: any) {
         if (typeof row === "string") {
             debugger;
             return row;
+        } else if (typeof row === "undefined") {
+            return "//  generate(undefined)";
         } else if (this[row?.constructor?.name]) {
             return this[row.constructor.name](row);
         }
@@ -47,21 +71,29 @@ ${this.outputBuffer()}
     writeAction(row: any) {
         const text = this.generate(row);
         if (text !== undefined) {
-            this.append(`console.log(${text});`);
+            this.append(`console.log(${text});`, row.scope.path);
             return true;
         }
         console.log(`Unhandled type:  ${row?.constructor?.name}`);
         return false;
     }
 
-    writeDecl(id: string, ref: any) {
-        if (!this.decl[id]) {
-            this.decl[id] = this.generate(ref);
+    writeDecl(id: string, ref: any, scope: HLScope) {
+        if (scope instanceof HLFunctionScope) {
+            debugger;
+        }
+        if (!this.fileContent[scope.path]) {
+            this.fileContent[scope.path] = { declarations: {}, actions: [] };
+        }
+        if (!this.fileContent[scope.path].declarations[id]) {
+            this.fileContent[scope.path].declarations[id] = this.generate(ref);
         }
     }
 
     IdentifierExpression(row: IdentifierExpression) {
-        this.writeDecl(row.id, row.ref);
+        if (row.scope instanceof HLFileScope) {
+            this.writeDecl(row.id, row.ref, row.scope);
+        }
         return `${row.id}`;
     }
 
@@ -99,17 +131,67 @@ ${this.outputBuffer()}
         return `${this.generate(row.lhs)} ${row.action} ${this.generate(row.rhs)}`;
     }
 
-    FunctionCallExpression(row: FunctionCallExpression) {
-        this.writeDecl(row.id, row.func);
-        return `${row.ctx.getText()}`;
+    RelationalExpression(row: RelationalExpression) {
+        return `${this.generate(row.lhs)} ${row.action} ${this.generate(row.rhs)}`;
     }
 
-    HLFunctionScopeXXX(row: HLFunctionScope) {
+    FunctionCallExpression(row: FunctionCallExpression) {
+        this.writeDecl(row.id, row.func, row.scope);
+        return `${row.id}(${row.args.map(arg => {
+            return arg?.ctx.getText() || "undefined";
+        }).join(", ")})`;
+    }
 
+    HLFunctionScope(row: HLFunctionScope) {
+
+        const defaults = [];
+        row.params.forEach(param => {
+            if (param.defaultExpression()) {
+                defaults.push(`${param.id} = ${param.id} !== undefined ? ${param.id} : ${this.generate(param.defaultExpression())};`);
+            }
+        });
+
+        return `(${row.params.map(param => param.id).join(", ")}) => {
+${defaults.join("\n")}${defaults.length ? "\n" : ""}\
+${this.generate(row.body)}
+}`;
+    }
+
+    ArrowParamaterXXX(row: ArrowParamater) {
+    }
+
+    ArrowBody(row: ArrowBody) {
+        return `\
+${row.items.map(item => this.generate(item)).join(";\n")}${row.items.length ? ";\n" : ""}\
+${row.returnExpression ? "return" : ""} ${this.generate(row.returnExpression)};`;
     }
 
     GenerateFunction(row: GenerateFunction) {
         return `df.generate(${this.generate(row.expression)}, ${this.generate(row.total)})`;
+    }
+
+    RandomFunction(row: RandomFunction) {
+        return "TODO"; //`Math(${this.generate(row.expression)}, ${this.generate(row.total)})`;
+    }
+
+    PipeExpression(row: PipeExpression) {
+        return `df.pipe(${row.items.map(item => this.generate(item)).join(", ")})`;
+    }
+
+    FilterFunction(row: FilterFunction) {
+        return `df.filter(${this.generate(row.expression)})`;
+    }
+
+    SortFunction(row: SortFunction) {
+        return `df.sort(${this.generate(row.expression)})`;
+    }
+
+    CountFunction(row: CountFunction) {
+        return "df.count()";
+    }
+
+    FirstNFunction(row: FirstNFunction) {
+        return `df.first(${row.count})`;
     }
 }
 

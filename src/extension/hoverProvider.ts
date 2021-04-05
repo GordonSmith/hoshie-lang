@@ -37,7 +37,7 @@ export class HLHoverProvider implements vscode.HoverProvider {
             const decl = scope.resolve(id);
 
             const marked = new vscode.MarkdownString(decl ? `\
-__${decl.expression.type}__:  _${decl.eval()}_
+__${decl.expression.type}__:  _${(decl.expression as any)?.returnType || decl.eval()}_
 
 ${path.relative(path.dirname(document.fileName), decl.scope.path)} (${decl.line}, ${decl.column}, ${decl.length})
             ` : "");

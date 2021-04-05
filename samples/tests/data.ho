@@ -10,3 +10,6 @@ p1 = {7, "Bond", "James"} as Person;
 p2 = [{7, "Bond", "James"}, {1, "Q", "Mr"}] as Person[];
 p3 = [{7, "Bond", "James"}, {1, "Q", "M" + "r"}] as People;
 p4 = [{7, "Bond", "James"}, {1, "Q", "Mr"}] as PersonArr;
+
+utest(p1.id == 7);
+utest(p1.lname == "Bond");

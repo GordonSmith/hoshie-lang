@@ -3,6 +3,7 @@ import { RHS } from "./expression";
 import { HLScope } from "./scope";
 import { HLNode } from "./node";
 import { HLDeclaration } from "./declaration";
+import { RowType } from "./types";
 
 export class HLFunction extends HLNode implements RHS {
 
@@ -93,5 +94,95 @@ export class GenerateFunction extends HLFunction {
             retVal.push(this.expression.eval());
         }
         return retVal;
+    }
+}
+
+export class FilterFunction extends HLFunction {
+
+    get type(): ExpresionType {
+        return "data[]";
+    }
+
+    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
+        super(ctx);
+    }
+
+    typeInfo(_: RowType) {
+        return this.expression.type;
+    }
+
+    eval(): number {
+        return undefined;
+    }
+}
+
+export class MapFunction extends HLFunction {
+
+    get type(): ExpresionType {
+        return "data[]";
+    }
+
+    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
+        super(ctx);
+    }
+
+    typeInfo(_: RowType) {
+        return this.expression.type;
+    }
+
+    eval(): number {
+        return undefined;
+    }
+}
+
+export class SortFunction extends HLFunction {
+
+    get type(): ExpresionType {
+        return "data[]";
+    }
+
+    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
+        super(ctx);
+    }
+
+    typeInfo(_: RowType) {
+        return this.expression.type;
+    }
+
+    eval(): number {
+        return undefined;
+    }
+}
+
+export class CountFunction extends HLFunction {
+
+    get type(): ExpresionType {
+        return "number";
+    }
+
+    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
+        super(ctx);
+    }
+
+    eval(): number {
+        return undefined;
+    }
+}
+
+export class FirstNFunction extends HLFunction {
+
+    readonly count: number;
+
+    get type(): ExpresionType {
+        return "number";
+    }
+
+    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
+        super(ctx);
+        this.count = expression.eval() as number;
+    }
+
+    eval(): number {
+        return this.count;
     }
 }

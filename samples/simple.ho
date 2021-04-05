@@ -1,0 +1,28 @@
+Person = {string lname, string fname, number age};
+
+PersonEx = {string lname, string fname, number age, boolean pensioner};
+
+isAdult = (Person row) => row.age >= 18;
+
+adultFilter = filter(isAdult);
+
+extendPerson = (Person row) => {
+    return { row.lname, row.fname, row.age, row.age >= 65 };
+};
+
+pensionerMap = map(extendPerson);
+
+sorter = sort((PersonEx l, PersonEx r) => l.age - r.age);
+
+dataInCount = count();
+postFilterCount = count();
+meanAge = mean((PersonEx row) => row.age);
+
+first10 = firstN(10);
+
+myProcess = dataInCount -> adultFilter -> postFilterCount -> extendPerson -> meanAge -> sorter -> firstN(10);
+
+myProcess([]);
+
+"Done";
+ 

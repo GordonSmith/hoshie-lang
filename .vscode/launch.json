@@ -30,7 +30,7 @@
             "program": "${workspaceFolder}/lib-umd/index.js",
             "args": [
                 "compile",
-                "./samples/tests/index.ho"
+                "./samples/simple.ho"
             ],
             "outFiles": [
                 "${workspaceFolder}/lib-umd/**/*.js"
@@ -48,6 +48,18 @@
                 "run",
                 "./samples/tests/index.ho"
             ],
+            "outFiles": [
+                "${workspaceFolder}/lib-umd/**/*.js"
+            ]
+        },
+        {
+            "name": "hlcc execute",
+            "type": "pwa-node",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/out-js/samples/simple.js",
             "outFiles": [
                 "${workspaceFolder}/lib-umd/**/*.js"
             ]

@@ -187,6 +187,7 @@ _VS Code has many ways it can be extended to support new features and languages.
         * Word pattern
         * Indentation Rules
 * `grammars`:  VS Code uses [TextMate grammar definitions](https://macromates.com/manual/en/language_grammars) for its default syntax colouring.  This contribution point associates hoshie lang with a Text Mate language file `./syntaxes/hoshie.tmLanguage.json`.
+* `commands`
 
 # Evaluation
 
