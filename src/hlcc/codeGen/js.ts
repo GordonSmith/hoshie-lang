@@ -186,12 +186,16 @@ ${row.returnExpression ? "return" : ""} ${this.generate(row.returnExpression)};`
         return `df.sort(${this.generate(row.expression)})`;
     }
 
+    MapFunction(row: SortFunction) {
+        return `df.map(${this.generate(row.expression)})`;
+    }
+
     CountFunction(row: CountFunction) {
-        return "df.count()";
+        return "df.sensor(df.count())";
     }
 
     FirstNFunction(row: FirstNFunction) {
-        return `df.first(${row.count})`;
+        return `df.sensor(df.first(${row.count}))`;
     }
 }
 

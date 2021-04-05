@@ -20,7 +20,7 @@ meanAge = mean((PersonEx row) => row.age);
 
 first10 = firstN(10);
 
-myProcess = dataInCount -> adultFilter -> postFilterCount -> extendPerson -> meanAge -> sorter -> firstN(10);
+myProcess = dataInCount -> adultFilter -> postFilterCount -> pensionerMap -> meanAge -> sorter -> firstN(10);
 
 myProcess([]);
 
