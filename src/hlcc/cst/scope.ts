@@ -1,8 +1,8 @@
 import { HLError, HLNode, removeQuotes } from "./node";
 import { Declaration, HLDeclaration } from "./declaration";
-import { AdditiveExpression, ArrayExpression, BooleanExpression, EqualityExpression, IdentifierExpression, LogicalExpression, MultiplicativeExpression, NotExpression, NumericExpression, RelationalExpression, StringExpression, FunctionCallExpression, DataExpression, PipeExpression } from "./expression";
+import { AdditiveExpression, ArrayExpression, BooleanExpression, EqualityExpression, IdentifierExpression, LogicalExpression, MultiplicativeExpression, NotExpression, NumericExpression, RelationalExpression, StringExpression, FunctionCallExpression, DataExpression } from "./expression";
 import { HLAction, Test } from "./action";
-import { CountFunction, FilterFunction, FirstNFunction, GenerateFunction, LengthFunction, MapFunction, RandomFunction, SortFunction } from "./function";
+import { ConcatFunction, CountFunction, DeviationFunction, DistributionFunction, ExtentFunction, FilterFunction, FirstNFunction, GenerateFunction, GroupFunction, LengthFunction, MapFunction, MaxFunction, MeanFunction, MedianFunction, MinFunction, PipelineFunction, QuartileFunction, RandomFunction, ReadJsonFunction, ReduceFunction, SkipFunction, SortFunction, VarianceFunction } from "./function";
 import { HLParserVisitor } from "../grammar/HLParserVisitor";
 import { ArrayType, BooleanType, NumberType, RowType, StringType, TypeDeclaration } from "./types";
 
@@ -10,6 +10,14 @@ export interface Range {
     line: number,
     column: number,
     length: number
+}
+
+export function resolveRef(refIn) {
+    let ref = refIn;
+    while (ref?.ref) {
+        ref = ref.ref;
+    }
+    return ref;
 }
 
 const isChildToken = (item: any) => typeof item === "string";
@@ -178,6 +186,7 @@ export class HLScope extends HLParserVisitor {
         const [lhs, , rhs] = super.visitAdditiveExpression(ctx);
         if (lhs.type === "number" && rhs.type === "number") {
         } else if (lhs.type === "string" && rhs.type === "string" && !!ctx.Plus()) {
+        } else if (lhs.type === "string" && rhs.type === "number" && !!ctx.Plus()) {
         } else {
             this.ctxError(ctx, "Additive Expression is not valid");
         }
@@ -261,7 +270,8 @@ export class HLScope extends HLParserVisitor {
     }
 
     visitDataLiteralExpression(ctx) {
-        const [[_, items]] = super.visitDataLiteralExpression(ctx);
+        const children = super.visitDataLiteralExpression(ctx);
+        const [[_, items]] = children;
         return new DataExpression(ctx, this, items);
     }
 
@@ -353,7 +363,12 @@ export class HLScope extends HLParserVisitor {
         const exprType = expression?.body?.type || expression?.type;
         switch (exprType) {
             case "data":
+                expression.typeInfo && expression.typeInfo(asType?.type);
+                break;
             case "data[]":
+                if (asType?.type && !(asType?.type instanceof ArrayType)) {
+                    this.appendError(expression, "Expected \"as\" to be an Array?");
+                }
                 expression.typeInfo && expression.typeInfo(asType?.type);
                 break;
             default:
@@ -378,13 +393,6 @@ export class HLScope extends HLParserVisitor {
         const test = new Test(ctx, this, actual, expected, msg?.getText());
         this._tests.push(test);
         return test;
-    }
-
-    visitPipeExpression(ctx) {
-        const children = super.visitPipeExpression(ctx);
-        const [items] = children;
-        const pipeItems = items.filter(child => child !== "->");
-        return new PipeExpression(ctx, this, pipeItems);
     }
 
     visitPipeIdentifierExpression(ctx) {
@@ -443,13 +451,32 @@ export class HLScope extends HLParserVisitor {
                 default:
                     this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
             }
+        } else if (keyword.ReadJson()) {
+            switch (params.length) {
+                case 1:
+                    const ref = resolveRef(params[0]);
+                    if (ref?.type !== "string") {
+                        this.ctxError(ctx, "Expression should resolve to a string");
+                    }
+                    return new ReadJsonFunction(ctx, this, params[0]);
+                default:
+                    this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
+            }
+        } else if (keyword.activity()?.Concat()) {
+            switch (params.length) {
+                case 1:
+                    const ref = resolveRef(params[0]);
+                    if (ref?.returnType !== "data[]") {
+                        this.ctxError(ctx, "Expression should resolve to a data[]");
+                    }
+                    return new ConcatFunction(ctx, this, params[0]);
+                default:
+                    this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
+            }
         } else if (keyword.activity()?.Filter()) {
             switch (params.length) {
                 case 1:
-                    let ref = params[0];
-                    while (ref.ref) {
-                        ref = ref.ref;
-                    }
+                    const ref = resolveRef(params[0]);
                     if (ref?.returnType !== "boolean") {
                         this.ctxError(ctx, "Expression should resolve to a boolean");
                     }
@@ -457,13 +484,32 @@ export class HLScope extends HLParserVisitor {
                 default:
                     this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
             }
+        } else if (keyword.activity()?.FirstN()) {
+            switch (params.length) {
+                case 1:
+                    const ref = resolveRef(params[0]);
+                    if (ref?.type !== "number") {
+                        this.ctxError(ctx, "Expression should resolve to a number");
+                    }
+                    return new FirstNFunction(ctx, this, params[0]);
+                default:
+                    this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
+            }
+        } else if (keyword.activity()?.Group()) {
+            switch (params.length) {
+                case 1:
+                    const ref = resolveRef(params[0]);
+                    if (ref?.type !== "boolean" || ref?.type !== "number" || ref?.type !== "string") {
+                        this.ctxError(ctx, "Expression should resolve to a boolean, number or string");
+                    }
+                    return new GroupFunction(ctx, this, params[0]);
+                default:
+                    this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
+            }
         } else if (keyword.activity()?.Map()) {
             switch (params.length) {
                 case 1:
-                    let ref = params[0];
-                    while (ref.ref) {
-                        ref = ref.ref;
-                    }
+                    const ref = resolveRef(params[0]);
                     if (ref?.returnType !== "data") {
                         this.ctxError(ctx, "Expression should resolve to a data");
                     }
@@ -471,31 +517,31 @@ export class HLScope extends HLParserVisitor {
                 default:
                     this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
             }
+        } else if (keyword.activity()?.Pipeline()) {
+            if (params.length > 2) {
+                return new PipelineFunction(ctx, this, params);
+            } else {
+                this.ctxError(ctx, "Invalid number of paramaters, expected 2 or more.");
+            }
+        } else if (keyword.activity()?.Skip()) {
+            switch (params.length) {
+                case 1:
+                    const ref = resolveRef(params[0]);
+                    if (ref?.type !== "number") {
+                        this.ctxError(ctx, "Expression should resolve to a number");
+                    }
+                    return new SkipFunction(ctx, this, params[0]);
+                default:
+                    this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
+            }
         } else if (keyword.activity()?.Sort()) {
             switch (params.length) {
                 case 1:
-                    let ref = params[0];
-                    while (ref.ref) {
-                        ref = ref.ref;
-                    }
+                    const ref = resolveRef(params[0]);
                     if (ref?.returnType !== "number") {
                         this.ctxError(ctx, "Expression should resolve to a number (-1, 0, 1)");
                     }
                     return new SortFunction(ctx, this, params[0]);
-                default:
-                    this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
-            }
-        } else if (keyword.activity()?.FirstN()) {
-            switch (params.length) {
-                case 1:
-                    let ref = params[0];
-                    while (ref.ref) {
-                        ref = ref.ref;
-                    }
-                    if (ref?.type !== "number") {
-                        this.ctxError(ctx, "Expression should resolve to a number");
-                    }
-                    return new FirstNFunction(ctx, this, params[0]);
                 default:
                     this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
             }
@@ -506,17 +552,113 @@ export class HLScope extends HLParserVisitor {
                 default:
                     this.ctxError(ctx, "Invalid number of paramaters, expected 0.");
             }
+        } else if (keyword.sensor()?.Deviation()) {
+            switch (params.length) {
+                case 1:
+                    const ref = resolveRef(params[0]);
+                    if (ref?.returnType !== "number") {
+                        this.ctxError(ctx, "Expression should resolve to a number.");
+                    }
+                    return new DeviationFunction(ctx, this, params[0]);
+                default:
+                    this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
+            }
+        } else if (keyword.sensor()?.Distribution()) {
+            switch (params.length) {
+                case 1:
+                    const ref = resolveRef(params[0]);
+                    if (ref?.returnType !== "number") {
+                        this.ctxError(ctx, "Expression should resolve to a number.");
+                    }
+                    return new DistributionFunction(ctx, this, params[0]);
+                default:
+                    this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
+            }
+        } else if (keyword.sensor()?.Extent()) {
+            switch (params.length) {
+                case 1:
+                    const ref = resolveRef(params[0]);
+                    if (ref?.returnType !== "number") {
+                        this.ctxError(ctx, "Expression should resolve to a number.");
+                    }
+                    return new ExtentFunction(ctx, this, params[0]);
+                default:
+                    this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
+            }
+        } else if (keyword.sensor()?.Max()) {
+            switch (params.length) {
+                case 1:
+                    const ref = resolveRef(params[0]);
+                    if (ref?.returnType !== "number") {
+                        this.ctxError(ctx, "Expression should resolve to a number.");
+                    }
+                    return new MaxFunction(ctx, this, params[0]);
+                default:
+                    this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
+            }
         } else if (keyword.sensor()?.Mean()) {
             switch (params.length) {
                 case 1:
-                    let ref = params[0];
-                    while (ref.ref) {
-                        ref = ref.ref;
-                    }
+                    const ref = resolveRef(params[0]);
                     if (ref?.returnType !== "number") {
-                        this.ctxError(ctx, "Expression should resolve to a number (-1, 0, 1)");
+                        this.ctxError(ctx, "Expression should resolve to a number.");
                     }
-                    return new SortFunction(ctx, this, params[0]);
+                    return new MeanFunction(ctx, this, params[0]);
+                default:
+                    this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
+            }
+        } else if (keyword.sensor()?.Median()) {
+            switch (params.length) {
+                case 1:
+                    const ref = resolveRef(params[0]);
+                    if (ref?.returnType !== "number") {
+                        this.ctxError(ctx, "Expression should resolve to a number.");
+                    }
+                    return new MedianFunction(ctx, this, params[0]);
+                default:
+                    this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
+            }
+        } else if (keyword.sensor()?.Min()) {
+            switch (params.length) {
+                case 1:
+                    const ref = resolveRef(params[0]);
+                    if (ref?.returnType !== "number") {
+                        this.ctxError(ctx, "Expression should resolve to a number.");
+                    }
+                    return new MinFunction(ctx, this, params[0]);
+                default:
+                    this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
+            }
+        } else if (keyword.sensor()?.Quartile()) {
+            switch (params.length) {
+                case 1:
+                    const ref = resolveRef(params[0]);
+                    if (ref?.returnType !== "number") {
+                        this.ctxError(ctx, "Expression should resolve to a number.");
+                    }
+                    return new QuartileFunction(ctx, this, params[0]);
+                default:
+                    this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
+            }
+        } else if (keyword.sensor()?.Reduce()) {
+            switch (params.length) {
+                case 1:
+                    const ref = resolveRef(params[0]);
+                    if (ref?.returnType !== "number") {
+                        this.ctxError(ctx, "Expression should resolve to a number.");
+                    }
+                    return new ReduceFunction(ctx, this, params[0]);
+                default:
+                    this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
+            }
+        } else if (keyword.sensor()?.Variance()) {
+            switch (params.length) {
+                case 1:
+                    const ref = resolveRef(params[0]);
+                    if (ref?.returnType !== "number") {
+                        this.ctxError(ctx, "Expression should resolve to a number.");
+                    }
+                    return new VarianceFunction(ctx, this, params[0]);
                 default:
                     this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
             }

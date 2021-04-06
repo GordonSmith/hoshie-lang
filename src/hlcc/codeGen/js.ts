@@ -1,9 +1,9 @@
 import * as os from "os";
 import * as path from "path";
 import * as fs from "fs";
-import { AdditiveExpression, ArrayExpression, ArrowBody, ArrowParamater, DataExpression, FunctionCallExpression, IdentifierExpression, NumericExpression, PipeExpression, RelationalExpression, StringExpression } from "../cst/expression";
-import { CountFunction, FilterFunction, FirstNFunction, GenerateFunction, RandomFunction, SortFunction } from "../cst/function";
-import { HLScope } from "../cst/scope";
+import { AdditiveExpression, ArrayExpression, ArrowBody, ArrowParamater, DataExpression, FunctionCallExpression, IdentifierExpression, NumericExpression, RelationalExpression, StringExpression } from "../cst/expression";
+import { CountFunction, FilterFunction, FirstNFunction, GenerateFunction, PipelineFunction, RandomFunction, ReadJsonFunction, SortFunction } from "../cst/function";
+import { HLScope, resolveRef } from "../cst/scope";
 import { HLFileScope } from "../cst/scopes/file";
 import { HLFunctionScope } from "../cst/scopes/function";
 import { RowType } from "../cst/types";
@@ -44,6 +44,7 @@ class JSWriter {
             const content = `\
 /* eslint-disable */
 const df = require("@hpcc-js/dataflow");
+const fs = require("fs");
 
 ${this.outputDecl(hoPath)}
 
@@ -70,8 +71,15 @@ ${this.outputBuffer(hoPath)}
 
     writeAction(row: any) {
         const text = this.generate(row);
+        const ref = resolveRef(row);
         if (text !== undefined) {
-            this.append(`console.log(${text});`, row.scope.path);
+            if (row?.func instanceof PipelineFunction) {
+                this.append(`console.log(JSON.stringify([...${text}], undefined, 2));`, row.scope.path);
+            } else if (ref?.isSensor) {
+                this.append(`console.log(${text}.peek());`, row.scope.path);
+            } else {
+                this.append(`console.log(${text});`, row.scope.path);
+            }
             return true;
         }
         console.log(`Unhandled type:  ${row?.constructor?.name}`);
@@ -137,6 +145,7 @@ ${this.outputBuffer(hoPath)}
 
     FunctionCallExpression(row: FunctionCallExpression) {
         this.writeDecl(row.id, row.func, row.scope);
+        row.args.forEach(arg => this.generate(arg));
         return `${row.id}(${row.args.map(arg => {
             return arg?.ctx.getText() || "undefined";
         }).join(", ")})`;
@@ -162,7 +171,7 @@ ${this.generate(row.body)}
 
     ArrowBody(row: ArrowBody) {
         return `\
-${row.items.map(item => this.generate(item)).join(";\n")}${row.items.length ? ";\n" : ""}\
+${row.items?.map(item => this.generate(item)).join(";\n")}${row.items?.length ? ";\n" : ""}\
 ${row.returnExpression ? "return" : ""} ${this.generate(row.returnExpression)};`;
     }
 
@@ -174,12 +183,23 @@ ${row.returnExpression ? "return" : ""} ${this.generate(row.returnExpression)};`
         return "TODO"; //`Math(${this.generate(row.expression)}, ${this.generate(row.total)})`;
     }
 
-    PipeExpression(row: PipeExpression) {
-        return `df.pipe(${row.items.map(item => this.generate(item)).join(", ")})`;
+    PipelineFunction(row: PipelineFunction) {
+        return `df.pipe(${row.items.map(item => {
+            const retVal = this.generate(item);
+            const ref = resolveRef(item);
+            if (ref?.isSensor) {
+                return `df.sensor(${retVal})`;
+            }
+            return retVal;
+        }).join(", ")})`;
     }
 
     FilterFunction(row: FilterFunction) {
         return `df.filter(${this.generate(row.expression)})`;
+    }
+
+    FirstNFunction(row: FirstNFunction) {
+        return `df.first(${row.count})`;
     }
 
     SortFunction(row: SortFunction) {
@@ -191,11 +211,35 @@ ${row.returnExpression ? "return" : ""} ${this.generate(row.returnExpression)};`
     }
 
     CountFunction(row: CountFunction) {
-        return "df.sensor(df.count())";
+        return "df.count()";
     }
 
-    FirstNFunction(row: FirstNFunction) {
-        return `df.sensor(df.first(${row.count}))`;
+    MeanFunction(row: CountFunction) {
+        return `df.mean(${this.generate(row.expression)})`;
+    }
+
+    QuartileFunction(row: CountFunction) {
+        return `df.quartile(${this.generate(row.expression)})`;
+    }
+
+    ExtentFunction(row: CountFunction) {
+        return `df.extent(${this.generate(row.expression)})`;
+    }
+
+    DistributionFunction(row: CountFunction) {
+        return `df.distribution(${this.generate(row.expression)})`;
+    }
+
+    DeviationFunction(row: CountFunction) {
+        return `df.deviation(${this.generate(row.expression)})`;
+    }
+
+    VariationFunction(row: CountFunction) {
+        return `df.variation(${this.generate(row.expression)})`;
+    }
+
+    ReadJsonFunction(row: ReadJsonFunction) {
+        return `JSON.parse(fs.readFileSync(${this.generate(row.expression)}, 'utf8'))`;
     }
 }
 

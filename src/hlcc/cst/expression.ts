@@ -387,12 +387,18 @@ export class ArrowParamater extends HLNode implements RHS {
 
 export class ArrowBody extends HLNode {
 
+    readonly items: HLDeclaration[];
+
     get type(): ExpresionType {
         return this.returnExpression.type;
     }
 
-    constructor(ctx: any, readonly scope: HLScope, readonly items: HLDeclaration[], readonly returnExpression: RHS) {
+    constructor(ctx: any, readonly scope: HLScope, items: HLDeclaration[], readonly returnExpression: RHS, readonly returnType?: TypeDeclaration) {
         super(ctx);
+        this.items = items || [];
+        if (returnExpression instanceof DataExpression) {
+            returnExpression.rowType = returnType as any;
+        }
     }
 
     contains(line: number, column: number) {
@@ -401,20 +407,5 @@ export class ArrowBody extends HLNode {
         if (line === this.ctx.start.line && column < this.ctx.start.column) return false;
         if (line === this.ctx.stop.line && column > this.ctx.stop.column) return false;
         return true;
-    }
-}
-
-export class PipeExpression extends HLExpression {
-
-    get type(): ExpresionType {
-        return "function";
-    }
-
-    constructor(ctx: any, scope: HLScope, readonly items: HLExpression[]) {
-        super(ctx, scope);
-    }
-
-    eval() {
-        return [];
     }
 }

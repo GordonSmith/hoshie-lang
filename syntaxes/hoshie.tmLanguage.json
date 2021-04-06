@@ -90,11 +90,11 @@
             "patterns": [
                 {
                     "name": "support.function.hoshie",
-                    "match": "\\b(length|random|pipe|filter)\\b"
+                    "match": "\\b(length|random|concat|filter|firstN|group|histogram|map|pipeline|skip|sort)\\b"
                 },
                 {
                     "name": "support.class.hoshie",
-                    "match": "\\b(utest|count)\\b"
+                    "match": "\\b(utest|count|deviation|distribution|extent|max|mean|median|quartile|reduce|variance)\\b"
                 }
             ]
         },

@@ -95,22 +95,44 @@ identifier: Identifier ('.'+ Identifier)*;
 
 reservedWord: keyword | NullLiteral | BooleanLiteral;
 
-activity: Filter | Map | Sort | FirstN;
+activity
+  : Concat
+  | Filter
+  | FirstN
+  | Group
+  | Map
+  | Pipeline
+  | Skip
+  | Sort
+  ;
 
-sensor: Count | Mean;
+sensor
+  : Count
+  | Deviation
+  | Distribution
+  | Extent
+  | Max
+  | Mean
+  | Median
+  | Min
+  | Quartile
+  | Reduce
+  | Variance
+  ;
 
-keyword: Generate | Random | Length | activity | sensor;
+keyword
+  : Generate
+  | Random
+  | Length
+  | activity
+  | sensor
+  | ReadJson
+  | WriteJson
+  ;
 
 emptyStatement: ';';
 
 elementList: singleExpression (','+ singleExpression)*;
-
-pipe: pipeItem '->' pipeItem ('->'+ pipeItem)*;
-
-pipeItem
-  : identifier        # PipeIdentifierExpression
-  | keyword arguments # PipekeywordExpression
-  ;
 
 optionalElementList
   : ','* singleExpression? (','+ singleExpression)* ','* // Yes, everything is optional
@@ -139,7 +161,6 @@ singleExpression
   | literal                                                     # LiteralExpression
   | arrayLiteral                                                # ArrayLiteralExpression
   | arrowFunction                                               # ArrowFunctionExpression
-  | pipe                                                        # PipeExpression
   | keyword arguments                                           # KeywordCallExpression
   ;
 
@@ -181,6 +202,20 @@ formalParameterArg
   : singleTypeExpression identifier ('=' singleExpression)? // ECMAScript 6: Initialization
   ;
 
-functionBody: fileElement* Return singleExpression eos;
+functionBody
+  : functionBodyStatement* Return returnExpression (
+    As returnTypeExpression
+  )? eos
+  ;
+
+functionBodyStatement
+  : typeStatement
+  | variableStatement
+  | emptyStatement
+  ;
+
+returnExpression: singleExpression;
+
+returnTypeExpression: singleTypeExpression;
 
 eos: ';' | EOF;

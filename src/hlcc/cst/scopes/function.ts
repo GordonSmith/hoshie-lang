@@ -2,7 +2,14 @@ import { ExpresionT, ExpresionType } from "../node";
 import { ArrowBody, ArrowParamater, HLExpression, isRHS, RHS } from "../expression";
 import { HLScope } from "../scope";
 import { Declaration } from "../declaration";
+import { TypeDeclaration } from "../types";
 
+function nullOrArray(item) {
+    if (Array.isArray(item)) {
+        return item[0];
+    }
+    return undefined;
+}
 export class HLFunctionScope extends HLScope implements RHS {
 
     params: ArrowParamater[] = [];
@@ -19,6 +26,10 @@ export class HLFunctionScope extends HLScope implements RHS {
     constructor(readonly path: string, readonly ctx, readonly paramsScope: HLScope) {
         super("", path);
         this.visitArrowFunctionExpression(this.ctx);
+    }
+
+    resolveType(id: string): TypeDeclaration | undefined {
+        return super.resolveType(id) || this.paramsScope.resolveType(id);
     }
 
     eval(): ExpresionT {
@@ -64,23 +75,16 @@ export class HLFunctionScope extends HLScope implements RHS {
             return new ArrowBody(ctx, this, [], items[0]);
         }
         //  functionBody, last item is return
-        let returnExpression;
-        while (!returnExpression) {
-            returnExpression = items[1].pop();
-        }
-        return new ArrowBody(ctx, this, items[1], returnExpression);
+        return new ArrowBody(ctx, this, items[1].body, items[1].returnValue, items[1].asType);
     }
 
     visitFunctionBody(ctx) {
-        const items = super.visitFunctionBody(ctx);
-        return items.map(row => {
-            if (Array.isArray(row) && !!row[0]) {
-                return row[0][0];
-            } else if (isRHS(row)) {
-                return row;
-            }
-            return undefined;
-        }).filter(row => typeof row !== "string");
+        const children = super.visitFunctionBody(ctx);
+        return {
+            body: nullOrArray(this.visitFunctionBodyStatement(ctx.functionBodyStatement())),
+            returnValue: nullOrArray(this.visitReturnExpression(ctx.returnExpression())),
+            asType: nullOrArray(this.visitReturnTypeExpression(ctx.returnTypeExpression()))
+        };
     }
 }
 

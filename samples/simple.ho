@@ -2,27 +2,44 @@ Person = {string lname, string fname, number age};
 
 PersonEx = {string lname, string fname, number age, boolean pensioner};
 
-isAdult = (Person row) => row.age >= 18;
+isAdult = (Person row) => row.age >= 28;
 
 adultFilter = filter(isAdult);
 
 extendPerson = (Person row) => {
-    return { row.lname, row.fname, row.age, row.age >= 65 };
+    return { row.lname, row.fname, row.age, row.age >= 65 } as PersonEx;
 };
 
 pensionerMap = map(extendPerson);
 
 sorter = sort((PersonEx l, PersonEx r) => l.age - r.age);
 
+extractAge = (PersonEx row) => row.age;
 dataInCount = count();
 postFilterCount = count();
-meanAge = mean((PersonEx row) => row.age);
+meanAge = mean(extractAge);
+extentAge = extent(extractAge);
+quartileAge = quartile(extractAge);
+distributionAge = distribution(extractAge);
 
 first10 = firstN(10);
 
-myProcess = dataInCount -> adultFilter -> postFilterCount -> pensionerMap -> meanAge -> sorter -> firstN(10);
+myProcess = pipeline(dataInCount, extentAge, adultFilter, postFilterCount, pensionerMap, 
+                    meanAge, quartileAge, distributionAge, sort((PersonEx l, PersonEx r) => l.age - r.age), firstN(10));
 
-myProcess([]);
+data2 = readJson("./samples/sampleData.json");
 
-"Done";
+myProcess(data2);
+
+"---before filter---";
+dataInCount;
+extentAge;
+
+"---after filter---";
+postFilterCount;
+meanAge;
+quartileAge;
+distributionAge;
+
+"---done---";
  

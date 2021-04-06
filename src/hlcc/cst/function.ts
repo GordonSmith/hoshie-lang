@@ -3,7 +3,7 @@ import { RHS } from "./expression";
 import { HLScope } from "./scope";
 import { HLNode } from "./node";
 import { HLDeclaration } from "./declaration";
-import { RowType } from "./types";
+import { ArrayType, RowType } from "./types";
 
 export class HLFunction extends HLNode implements RHS {
 
@@ -97,7 +97,36 @@ export class GenerateFunction extends HLFunction {
     }
 }
 
-export class FilterFunction extends HLFunction {
+export class ReadJsonFunction extends HLFunction {
+
+    rowType: ArrayType;
+
+    get type(): ExpresionType {
+        return "data[]";
+    }
+
+    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
+        super(ctx);
+    }
+
+    eval(): number {
+        return undefined;
+    }
+
+    typeInfo(_: any) {
+        if (_ instanceof ArrayType) {
+            this.rowType = _;
+        } else {
+        }
+    }
+
+}
+
+export class ActivityFunction extends HLFunction {
+    readonly isSActivity = true;
+}
+
+export class ConcatFunction extends ActivityFunction {
 
     get type(): ExpresionType {
         return "data[]";
@@ -116,7 +145,7 @@ export class FilterFunction extends HLFunction {
     }
 }
 
-export class MapFunction extends HLFunction {
+export class FilterFunction extends ActivityFunction {
 
     get type(): ExpresionType {
         return "data[]";
@@ -135,46 +164,12 @@ export class MapFunction extends HLFunction {
     }
 }
 
-export class SortFunction extends HLFunction {
-
-    get type(): ExpresionType {
-        return "data[]";
-    }
-
-    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
-        super(ctx);
-    }
-
-    typeInfo(_: RowType) {
-        return this.expression.type;
-    }
-
-    eval(): number {
-        return undefined;
-    }
-}
-
-export class CountFunction extends HLFunction {
-
-    get type(): ExpresionType {
-        return "number";
-    }
-
-    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
-        super(ctx);
-    }
-
-    eval(): number {
-        return undefined;
-    }
-}
-
-export class FirstNFunction extends HLFunction {
+export class FirstNFunction extends ActivityFunction {
 
     readonly count: number;
 
     get type(): ExpresionType {
-        return "number";
+        return "data[]";
     }
 
     constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
@@ -184,5 +179,260 @@ export class FirstNFunction extends HLFunction {
 
     eval(): number {
         return this.count;
+    }
+}
+
+export class GroupFunction extends ActivityFunction {
+
+    get type(): ExpresionType {
+        return "data[]";
+    }
+
+    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
+        super(ctx);
+    }
+
+    eval(): number {
+        return undefined;
+    }
+}
+
+export class MapFunction extends ActivityFunction {
+
+    get type(): ExpresionType {
+        return "data[]";
+    }
+
+    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
+        super(ctx);
+    }
+
+    typeInfo(_: RowType) {
+        return this.expression.type;
+    }
+
+    eval(): number {
+        return undefined;
+    }
+}
+
+export class PipelineFunction extends ActivityFunction {
+
+    get type(): ExpresionType {
+        return "function";
+    }
+
+    constructor(ctx: any, scope: HLScope, readonly items: any[]) {
+        super(ctx);
+    }
+
+    eval() {
+        return [];
+    }
+}
+
+export class SkipFunction extends ActivityFunction {
+
+    readonly count: number;
+
+    get type(): ExpresionType {
+        return "data[]";
+    }
+
+    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
+        super(ctx);
+        this.count = expression.eval() as number;
+    }
+
+    eval(): number {
+        return this.count;
+    }
+}
+
+export class SortFunction extends ActivityFunction {
+
+    get type(): ExpresionType {
+        return "data[]";
+    }
+
+    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
+        super(ctx);
+    }
+
+    typeInfo(_: RowType) {
+        return this.expression.type;
+    }
+
+    eval(): number {
+        return undefined;
+    }
+}
+
+export class SensorFunction extends HLFunction {
+    readonly isSensor = true;
+}
+
+export class CountFunction extends SensorFunction {
+
+    get type(): ExpresionType {
+        return "number";
+    }
+
+    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
+        super(ctx);
+    }
+
+    eval(): number {
+        return undefined;
+    }
+}
+
+export class DeviationFunction extends SensorFunction {
+
+    get type(): ExpresionType {
+        return "number";
+    }
+
+    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
+        super(ctx);
+    }
+
+    eval(): number {
+        return undefined;
+    }
+}
+
+export class DistributionFunction extends SensorFunction {
+
+    get type(): ExpresionType {
+        return "number";
+    }
+
+    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
+        super(ctx);
+    }
+
+    eval(): number {
+        return undefined;
+    }
+}
+
+export class ExtentFunction extends SensorFunction {
+
+    get type(): ExpresionType {
+        return "number";
+    }
+
+    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
+        super(ctx);
+    }
+
+    eval(): number {
+        return undefined;
+    }
+}
+
+export class MaxFunction extends SensorFunction {
+
+    get type(): ExpresionType {
+        return "number";
+    }
+
+    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
+        super(ctx);
+    }
+
+    eval(): number {
+        return undefined;
+    }
+}
+
+export class MeanFunction extends SensorFunction {
+
+    get type(): ExpresionType {
+        return "number";
+    }
+
+    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
+        super(ctx);
+    }
+
+    eval(): number {
+        return undefined;
+    }
+}
+
+export class MedianFunction extends SensorFunction {
+
+    get type(): ExpresionType {
+        return "number";
+    }
+
+    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
+        super(ctx);
+    }
+
+    eval(): number {
+        return undefined;
+    }
+}
+
+export class MinFunction extends SensorFunction {
+
+    get type(): ExpresionType {
+        return "number";
+    }
+
+    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
+        super(ctx);
+    }
+
+    eval(): number {
+        return undefined;
+    }
+}
+
+export class QuartileFunction extends SensorFunction {
+
+    get type(): ExpresionType {
+        return "number";
+    }
+
+    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
+        super(ctx);
+    }
+
+    eval(): number {
+        return undefined;
+    }
+}
+
+export class ReduceFunction extends SensorFunction {
+
+    get type(): ExpresionType {
+        return "number";
+    }
+
+    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
+        super(ctx);
+    }
+
+    eval(): number {
+        return undefined;
+    }
+}
+
+export class VarianceFunction extends SensorFunction {
+
+    get type(): ExpresionType {
+        return "number";
+    }
+
+    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
+        super(ctx);
+    }
+
+    eval(): number {
+        return undefined;
     }
 }

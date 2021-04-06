@@ -27,7 +27,6 @@ NotEquals: '!=';
 And: '&&';
 Or: '||';
 Arrow: '=>';
-Link: '->';
 Dot: '.';
 
 //  Keywords
@@ -45,16 +44,32 @@ Length: 'length';
 Generate: 'generate';
 Random: 'random';
 UTest: 'utest';
+ReadJson: 'readJson';
+WriteJson: 'writeJson';
 
 //  Activities
+Concat: 'concat';
 Filter: 'filter';
-Map: 'map';
-Sort: 'sort';
 FirstN: 'firstN';
+Group: 'group';
+Histogram: 'histogram';
+Map: 'map';
+Pipeline: 'pipeline';
+Skip: 'skip';
+Sort: 'sort';
 
 //  Sensors
 Count: 'count';
+Deviation: 'deviation';
+Distribution: 'distribution';
+Extent: 'extent';
+Max: 'max';
 Mean: 'mean';
+Median: 'median';
+Min: 'min';
+Quartile: 'quartile';
+Reduce: 'reduce';
+Variance: 'variance';
 
 //  Literals
 NullLiteral: 'null';
