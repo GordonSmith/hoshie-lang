@@ -12,3 +12,13 @@ _A new data centric programming language._
 7. Open folder in vscode
 8. Run build task:  `Ctrl + Shift + B`
 9. Launch debug session:  `F5`
+
+## Publishing a release
+
+```
+npm install
+npm run clean
+npm run build
+npm run vsce-package
+npm run vsce-install
+```

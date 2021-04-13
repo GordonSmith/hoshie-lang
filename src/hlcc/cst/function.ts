@@ -109,7 +109,32 @@ export class ReadJsonFunction extends HLFunction {
         super(ctx);
     }
 
-    eval(): number {
+    eval(): string {
+        return "data[]";
+    }
+
+    typeInfo(_: any) {
+        if (_ instanceof ArrayType) {
+            this.rowType = _;
+        } else {
+        }
+    }
+
+}
+
+export class WriteJsonFunction extends HLFunction {
+
+    rowType: ArrayType;
+
+    get type(): ExpresionType {
+        return "unknown";
+    }
+
+    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS, readonly path: RHS) {
+        super(ctx);
+    }
+
+    eval(): string {
         return undefined;
     }
 
@@ -123,26 +148,7 @@ export class ReadJsonFunction extends HLFunction {
 }
 
 export class ActivityFunction extends HLFunction {
-    readonly isSActivity = true;
-}
-
-export class ConcatFunction extends ActivityFunction {
-
-    get type(): ExpresionType {
-        return "data[]";
-    }
-
-    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
-        super(ctx);
-    }
-
-    typeInfo(_: RowType) {
-        return this.expression.type;
-    }
-
-    eval(): number {
-        return undefined;
-    }
+    readonly isActivity = true;
 }
 
 export class FilterFunction extends ActivityFunction {
@@ -197,6 +203,21 @@ export class GroupFunction extends ActivityFunction {
     }
 }
 
+export class GroupCountFunction extends ActivityFunction {
+
+    get type(): ExpresionType {
+        return "data[]";
+    }
+
+    constructor(ctx: any, readonly scope: HLScope, readonly expression: RHS) {
+        super(ctx);
+    }
+
+    eval(): number {
+        return undefined;
+    }
+}
+
 export class MapFunction extends ActivityFunction {
 
     get type(): ExpresionType {
@@ -227,11 +248,11 @@ export class PipelineFunction extends ActivityFunction {
     }
 
     eval() {
-        return [];
+        return "data[]";
     }
 }
 
-export class SkipFunction extends ActivityFunction {
+export class SkipNFunction extends ActivityFunction {
 
     readonly count: number;
 

@@ -55,7 +55,7 @@
             "patterns": [
                 {
                     "name": "keyword.control.hoshie",
-                    "match": "\\b(return|as|from)\\b"
+                    "match": "\\b(return|as|from|typeof)\\b"
                 },
                 {
                     "name": "keyword.operator.comparison.hoshie",
@@ -90,11 +90,11 @@
             "patterns": [
                 {
                     "name": "support.function.hoshie",
-                    "match": "\\b(length|random|concat|filter|firstN|group|histogram|map|pipeline|skip|sort)\\b"
+                    "match": "\\b(length|random|filter|firstN|group|groupCount|histogram|map|pipeline|skipN|sort)\\b"
                 },
                 {
                     "name": "support.class.hoshie",
-                    "match": "\\b(utest|count|deviation|distribution|extent|max|mean|median|quartile|reduce|variance)\\b"
+                    "match": "\\b(utest|count|deviation|distribution|extent|max|mean|median|min|quartile|reduce|variance)\\b"
                 }
             ]
         },

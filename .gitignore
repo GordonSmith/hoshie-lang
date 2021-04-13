@@ -3,5 +3,7 @@ docs/report
 grammar/.antlr
 grammar/*.txt
 lib-*/
+out-js/
 node_modules/
+tmp/
 package-lock.json

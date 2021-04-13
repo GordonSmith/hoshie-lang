@@ -1,6 +1,6 @@
 import { ExpresionT, ExpresionType } from "../node";
 import { ArrowBody, ArrowParamater, HLExpression, isRHS, RHS } from "../expression";
-import { HLScope } from "../scope";
+import { HLScope, resolveRef } from "../scope";
 import { Declaration } from "../declaration";
 import { TypeDeclaration } from "../types";
 
@@ -80,11 +80,24 @@ export class HLFunctionScope extends HLScope implements RHS {
 
     visitFunctionBody(ctx) {
         const children = super.visitFunctionBody(ctx);
+        const body = [];
+        let returnValue;
+        let foundReturn = false;
+        for (const item of children) {
+            if (item === "return") {
+                foundReturn = true;
+            } else if (foundReturn) {
+                returnValue = item[0];
+                break;
+            } else {
+                body.push(item[0]);
+            }
+        }
+        const retType = ctx.returnTypeExpression();
         return {
-            body: nullOrArray(this.visitFunctionBodyStatement(ctx.functionBodyStatement())),
-            returnValue: nullOrArray(this.visitReturnExpression(ctx.returnExpression())),
-            asType: nullOrArray(this.visitReturnTypeExpression(ctx.returnTypeExpression()))
+            body,
+            returnValue,
+            asType: retType ? nullOrArray(this.visitReturnExpression(retType)) : returnValue?.rowType
         };
     }
 }
-

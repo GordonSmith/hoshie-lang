@@ -1,0 +1,10 @@
+/*  
+    Simple Pipeline with one activity.
+    Fetches first 3 rows from people.json.
+*/
+
+data = readJson("./people.json");
+
+myProcess = pipeline(firstN(3));
+
+myProcess(data);

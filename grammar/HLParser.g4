@@ -61,7 +61,7 @@ variableStatement: variableDeclaration eos;
 variableDeclaration: Identifier variableInitialiser;
 
 variableInitialiser
-  : '=' singleExpression (As singleTypeExpression)?
+  : '=' singleExpression (Typeof singleTypeExpression)?
   ;
 
 importStatement: 'import' importFromBlock;
@@ -77,11 +77,17 @@ importNamespace
 importFrom: From StringLiteral;
 
 aliasName
-  : identifierName (As identifierName)? # ImportDeclaration
+  : (identifierName | IdentifierType) (
+    As (identifierName | IdentifierType)
+  )? # ImportDeclaration
   ;
 
 exportStatement
-  : Export (exportFromBlock | variableDeclaration) eos # ExportDeclaration
+  : Export (
+    exportFromBlock
+    | variableDeclaration
+    | typeDeclaration
+  ) eos # ExportDeclaration
   ;
 
 exportFromBlock
@@ -89,20 +95,20 @@ exportFromBlock
   | moduleItems importFrom? eos
   ;
 
-identifierName: identifier | reservedWord;
+identifierName: identifier;
 
 identifier: Identifier ('.'+ Identifier)*;
 
 reservedWord: keyword | NullLiteral | BooleanLiteral;
 
 activity
-  : Concat
-  | Filter
+  : Filter
   | FirstN
   | Group
+  | GroupCount
   | Map
   | Pipeline
-  | Skip
+  | SkipN
   | Sort
   ;
 
@@ -151,6 +157,7 @@ expressionSequence
 
 singleExpression
   : singleExpression arguments                                  # FunctionCallExpression
+  | '-' singleExpression                                        # UnaryMinusExpression
   | '!' singleExpression                                        # NotExpression
   | singleExpression ('*' | '/' | '%') singleExpression         # MultiplicativeExpression
   | singleExpression ('+' | '-') singleExpression               # AdditiveExpression
@@ -159,16 +166,16 @@ singleExpression
   | singleExpression ('&&' | '||') singleExpression             # LogicalExpression
   | identifier                                                  # IdentifierExpression
   | literal                                                     # LiteralExpression
-  | arrayLiteral                                                # ArrayLiteralExpression
+  | arrayLiteral (Typeof singleTypeExpression)?                 # ArrayLiteralExpression
   | arrowFunction                                               # ArrowFunctionExpression
   | keyword arguments                                           # KeywordCallExpression
   ;
 
 literal
-  : BooleanLiteral # BooleanLiteralExpression
-  | DecimalLiteral # NumberLiteralExpression
-  | StringLiteral  # StringLiteralExpression
-  | dataLiteral    # DataLiteralExpression
+  : BooleanLiteral                             # BooleanLiteralExpression
+  | DecimalLiteral                             # NumberLiteralExpression
+  | StringLiteral                              # StringLiteralExpression
+  | dataLiteral (Typeof singleTypeExpression)? # DataLiteralExpression
   ;
 
 dataLiteral: ('{' '}' | '{' elementList '}');
@@ -204,7 +211,7 @@ formalParameterArg
 
 functionBody
   : functionBodyStatement* Return returnExpression (
-    As returnTypeExpression
+    Typeof returnTypeExpression
   )? eos
   ;
 

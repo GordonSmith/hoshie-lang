@@ -1,0 +1,14 @@
+/*  
+    Pipeline Group and GroupCount.
+*/
+
+import { Person } from "./140-pipeline-filter";
+
+jobGroups = pipeline(group((Person row) => row.job), firstN(1));
+
+jobCountGroups = pipeline(groupCount((Person row) => row.job));
+
+data = readJson("./people.json");
+
+jobGroups(data);
+jobCountGroups(data);

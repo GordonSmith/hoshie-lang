@@ -78,11 +78,26 @@ export class TypeDeclaration extends HLType {
         return this.rhs.type;
     }
 
-    constructor(ctx: any, scope: HLScope, readonly id: string, readonly rhs: HLType) {
+    constructor(ctx: any, scope: HLScope, readonly id: string, readonly rhs?: HLType) {
         super(ctx, scope);
         if (!(rhs instanceof HLType)) {
 
         }
+    }
+
+    eval(): ExpresionType {
+        return this.type.eval();
+    }
+}
+
+export class TypeAlias extends TypeDeclaration {
+
+    get type(): HLType {
+        return this.typeDeclaration.type;
+    }
+
+    constructor(ctx: any, scope: HLScope, readonly id: string, readonly typeDeclaration: TypeDeclaration) {
+        super(ctx, scope, id);
     }
 
     eval(): ExpresionType {

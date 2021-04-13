@@ -36,6 +36,7 @@ String: 'string';
 Export: 'export';
 Import: 'import';
 As: 'as';
+Typeof: 'typeof';
 From: 'from';
 Return: 'return';
 
@@ -48,14 +49,14 @@ ReadJson: 'readJson';
 WriteJson: 'writeJson';
 
 //  Activities
-Concat: 'concat';
 Filter: 'filter';
 FirstN: 'firstN';
 Group: 'group';
+GroupCount: 'groupCount';
 Histogram: 'histogram';
 Map: 'map';
 Pipeline: 'pipeline';
-Skip: 'skip';
+SkipN: 'skipN';
 Sort: 'sort';
 
 //  Sensors

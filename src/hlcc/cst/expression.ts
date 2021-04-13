@@ -48,6 +48,21 @@ export class NotExpression extends HLExpression {
     }
 }
 
+export class UnaryMinusExpression extends HLExpression {
+
+    get type(): ExpresionType {
+        return "number";
+    }
+
+    constructor(ctx: any, scope: HLScope, readonly expression: HLExpression) {
+        super(ctx, scope);
+    }
+
+    eval(): number {
+        return -this.expression.eval();
+    }
+}
+
 type MultiplicativeT = "*" | "/" | "%";
 export class MultiplicativeExpression extends HLExpression {
 

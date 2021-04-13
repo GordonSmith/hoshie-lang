@@ -1,0 +1,5 @@
+import { mol, mol as mol2 } from "./080-library";
+
+ans = mol + mol2;
+
+ans;

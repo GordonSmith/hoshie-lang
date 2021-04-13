@@ -1,0 +1,8 @@
+//  Simple string examples
+"Hello World";
+"Hello" + " " + "World" +" - " + "2";
+
+["Hello", "World"];
+
+test = "Hello" + " " + "World" +" - " + "2";
+

@@ -2,7 +2,32 @@
 
 import * as yargs from "yargs";
 import { HLFileScope } from "./hlcc/cst/scopes/file";
-import { generate } from "./hlcc/codeGen/js";
+import { generate, outPath } from "./hlcc/codeGen/js";
+import * as childProcess from "child_process";
+
+function runScript(scriptPath, callback) {
+
+    // keep track of whether callback has been invoked to prevent multiple invocations
+    let invoked = false;
+
+    const process = childProcess.fork(scriptPath);
+
+    // listen for errors as they may prevent the exit event from firing
+    process.on("error", function (err) {
+        if (invoked) return;
+        invoked = true;
+        callback(err);
+    });
+
+    // execute the callback once the process has finished running
+    process.on("exit", function (code) {
+        if (invoked) return;
+        invoked = true;
+        const err = code === 0 ? null : new Error("exit code " + code);
+        callback(err);
+    });
+
+}
 
 const argv = yargs
     .scriptName("hlcc")
@@ -18,30 +43,34 @@ const argv = yargs
 const [cmd] = argv._ || [];
 let hlFile;
 
+function logErrors(hFile: HLFileScope) {
+    hlFile.allErrors().forEach(row => {
+        console.log(`${row.source}:${row.line}:${row.column} - ${row.severity} HO${row.code}: ${row.message}`);
+    });
+}
+
 switch (cmd) {
     case "check":
         console.log(`Syntax checking "${argv.file}"\n`);
         hlFile = new HLFileScope("", argv.file);
-        hlFile.allErrors().forEach(row => {
-            console.log(`${row.source}:${row.line}:${row.column} - ${row.severity} HO${row.code}: ${row.message}`);
-        });
+        logErrors(hlFile);
         break;
     case "compile":
         console.log(`Compiling "${argv.file}"\n`);
         hlFile = new HLFileScope("", argv.file);
-        hlFile.allErrors().forEach(row => {
-            console.log(`${row.source}:${row.line}:${row.column} - ${row.severity} HO${row.code}: ${row.message}`);
-        });
+        logErrors(hlFile);
         generate(hlFile);
         break;
     case "run":
-        console.log(`Running "${argv.file}"\n`);
+        console.log(`Compiling "${argv.file}"`);
         hlFile = new HLFileScope("", argv.file);
-        hlFile.allErrors().forEach(row => {
-            console.log(`${row.source}:${row.line}:${row.column} - ${row.severity} HO${row.code}: ${row.message}`);
-        });
-        hlFile.allActions().forEach(row => {
-            console.log(row.eval());
+        logErrors(hlFile);
+        console.log(`Compiled "${argv.file}"`);
+        generate(hlFile);
+        console.log(`Running "${argv.file}"\n`);
+        runScript(outPath(argv.file), function (err) {
+            if (err) throw err;
+            console.log(`\nFinished "${argv.file}"`);
         });
         break;
     case "test":

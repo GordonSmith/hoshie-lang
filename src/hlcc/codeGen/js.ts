@@ -1,15 +1,22 @@
-import * as os from "os";
 import * as path from "path";
 import * as fs from "fs";
-import { AdditiveExpression, ArrayExpression, ArrowBody, ArrowParamater, DataExpression, FunctionCallExpression, IdentifierExpression, NumericExpression, RelationalExpression, StringExpression } from "../cst/expression";
-import { CountFunction, FilterFunction, FirstNFunction, GenerateFunction, PipelineFunction, RandomFunction, ReadJsonFunction, SortFunction } from "../cst/function";
+import { AdditiveExpression, ArrayExpression, ArrowBody, ArrowParamater, DataExpression, EqualityExpression, FunctionCallExpression, IdentifierExpression, LogicalExpression, MultiplicativeExpression, NotExpression, NumericExpression, RelationalExpression, StringExpression, UnaryMinusExpression } from "../cst/expression";
+import { CountFunction, FilterFunction, FirstNFunction, GenerateFunction, GroupCountFunction, GroupFunction, LengthFunction, PipelineFunction, RandomFunction, ReadJsonFunction, SortFunction, WriteJsonFunction } from "../cst/function";
 import { HLScope, resolveRef } from "../cst/scope";
 import { HLFileScope } from "../cst/scopes/file";
 import { HLFunctionScope } from "../cst/scopes/function";
 import { RowType } from "../cst/types";
+import { removeQuotes } from "../cst/node";
 
 type Declaration = { [id: string]: string };
 type FileContent = { [path: string]: { declarations: Declaration, actions: string[] } };
+
+export function outPath(inPath: string): string {
+    const outPath = inPath.split(".");
+    outPath.pop();
+    outPath.push("js");
+    return path.join("out-js", outPath.join("."));
+}
 
 class JSWriter {
     fileContent: FileContent = {};
@@ -36,10 +43,11 @@ class JSWriter {
     output() {
         const retVal: string[] = [];
         for (const hoPath in this.fileContent) {
-            const outPath = hoPath.split(".");
-            outPath.pop();
-            outPath.push("js");
-            const jsPath = path.join("out-js", outPath.join("."));
+            // const outPath = hoPath.split(".");
+            // outPath.pop();
+            // outPath.push("js");
+            // const jsPath = path.join("out-js", outPath.join("."));
+            const jsPath = outPath(hoPath);
             retVal.push(`// ${jsPath}`);
             const content = `\
 /* eslint-disable */
@@ -73,10 +81,16 @@ ${this.outputBuffer(hoPath)}
         const text = this.generate(row);
         const ref = resolveRef(row);
         if (text !== undefined) {
-            if (row?.func instanceof PipelineFunction) {
+            if (ref?.func instanceof PipelineFunction) {
                 this.append(`console.log(JSON.stringify([...${text}], undefined, 2));`, row.scope.path);
+            } else if (row instanceof WriteJsonFunction) {
+                this.append(`${text};`, row.scope.path);
+            } else if (ref?.isActivity) {
+                this.append(`console.log(JSON.stringify(${text}.peek(), undefined, 2));`, row.scope.path);
             } else if (ref?.isSensor) {
-                this.append(`console.log(${text}.peek());`, row.scope.path);
+                this.append(`console.log(JSON.stringify(${text}.peek(), undefined, 2));`, row.scope.path);
+            } else if (ref.type === "data" || ref.type?.indexOf("[]") >= 0) {
+                this.append(`console.log(JSON.stringify(${text}, undefined, 2));`, row.scope.path);
             } else {
                 this.append(`console.log(${text});`, row.scope.path);
             }
@@ -117,6 +131,14 @@ ${this.outputBuffer(hoPath)}
         return `"${row.value}"`;
     }
 
+    NotExpression(row: NotExpression) {
+        return `!${this.generate(row.expression)}`;
+    }
+
+    UnaryMinusExpression(row: UnaryMinusExpression) {
+        return `-${this.generate(row.expression)}`;
+    }
+
     DataExpression(row: DataExpression) {
         const fields = row.fields.map((exp, i) => {
             const id = row.rowType?.fields[i]?.id || i;
@@ -139,7 +161,19 @@ ${this.outputBuffer(hoPath)}
         return `${this.generate(row.lhs)} ${row.action} ${this.generate(row.rhs)}`;
     }
 
+    MultiplicativeExpression(row: MultiplicativeExpression) {
+        return `${this.generate(row.lhs)} ${row.multiplicative} ${this.generate(row.rhs)}`;
+    }
+
     RelationalExpression(row: RelationalExpression) {
+        return `${this.generate(row.lhs)} ${row.action} ${this.generate(row.rhs)}`;
+    }
+
+    LogicalExpression(row: LogicalExpression) {
+        return `${this.generate(row.lhs)} ${row.action} ${this.generate(row.rhs)}`;
+    }
+
+    EqualityExpression(row: EqualityExpression) {
         return `${this.generate(row.lhs)} ${row.action} ${this.generate(row.rhs)}`;
     }
 
@@ -155,6 +189,7 @@ ${this.outputBuffer(hoPath)}
 
         const defaults = [];
         row.params.forEach(param => {
+            this.generate(param);
             if (param.defaultExpression()) {
                 defaults.push(`${param.id} = ${param.id} !== undefined ? ${param.id} : ${this.generate(param.defaultExpression())};`);
             }
@@ -173,6 +208,10 @@ ${this.generate(row.body)}
         return `\
 ${row.items?.map(item => this.generate(item)).join(";\n")}${row.items?.length ? ";\n" : ""}\
 ${row.returnExpression ? "return" : ""} ${this.generate(row.returnExpression)};`;
+    }
+
+    Declaration(row: Declaration) {
+        return `${row.id} = ${this.generate(row.expression)}`;
     }
 
     GenerateFunction(row: GenerateFunction) {
@@ -194,12 +233,29 @@ ${row.returnExpression ? "return" : ""} ${this.generate(row.returnExpression)};`
         }).join(", ")})`;
     }
 
+    LengthFunction(row: LengthFunction) {
+        const ref = resolveRef(row.expression);
+        return `${(row.expression as any).ctx.getText()}.length`;
+    }
+
     FilterFunction(row: FilterFunction) {
         return `df.filter(${this.generate(row.expression)})`;
     }
 
     FirstNFunction(row: FirstNFunction) {
         return `df.first(${row.count})`;
+    }
+
+    SkipNFunction(row: FirstNFunction) {
+        return `df.skip(${row.count})`;
+    }
+
+    GroupFunction(row: GroupFunction) {
+        return `df.group(${this.generate(row.expression)})`;
+    }
+
+    GroupCountFunction(row: GroupCountFunction) {
+        return `df.pipe(df.group(${this.generate(row.expression)}), df.map(row => ({key: row.key, value: row.value.length})))`;
     }
 
     SortFunction(row: SortFunction) {
@@ -214,32 +270,52 @@ ${row.returnExpression ? "return" : ""} ${this.generate(row.returnExpression)};`
         return "df.count()";
     }
 
-    MeanFunction(row: CountFunction) {
-        return `df.mean(${this.generate(row.expression)})`;
-    }
-
-    QuartileFunction(row: CountFunction) {
-        return `df.quartile(${this.generate(row.expression)})`;
-    }
-
-    ExtentFunction(row: CountFunction) {
-        return `df.extent(${this.generate(row.expression)})`;
+    DeviationFunction(row: CountFunction) {
+        return `df.deviation(${this.generate(row.expression)})`;
     }
 
     DistributionFunction(row: CountFunction) {
         return `df.distribution(${this.generate(row.expression)})`;
     }
 
-    DeviationFunction(row: CountFunction) {
-        return `df.deviation(${this.generate(row.expression)})`;
+    ExtentFunction(row: CountFunction) {
+        return `df.extent(${this.generate(row.expression)})`;
     }
 
-    VariationFunction(row: CountFunction) {
-        return `df.variation(${this.generate(row.expression)})`;
+    MaxFunction(row: CountFunction) {
+        return `df.max(${this.generate(row.expression)})`;
+    }
+
+    MeanFunction(row: CountFunction) {
+        return `df.mean(${this.generate(row.expression)})`;
+    }
+
+    MedianFunction(row: CountFunction) {
+        return `df.median(${this.generate(row.expression)})`;
+    }
+
+    MinFunction(row: CountFunction) {
+        return `df.min(${this.generate(row.expression)})`;
+    }
+
+    QuartileFunction(row: CountFunction) {
+        return `df.quartile(${this.generate(row.expression)})`;
+    }
+
+    VarianceFunction(row: CountFunction) {
+        return `df.variance(${this.generate(row.expression)})`;
     }
 
     ReadJsonFunction(row: ReadJsonFunction) {
-        return `JSON.parse(fs.readFileSync(${this.generate(row.expression)}, 'utf8'))`;
+        const srcPath = this.generate(row.expression);
+        const relPath = path.posix.join(path.dirname(row.scope.path), removeQuotes(srcPath));
+        return `JSON.parse(fs.readFileSync("${relPath}", 'utf8'))`;
+    }
+
+    WriteJsonFunction(row: WriteJsonFunction) {
+        const srcPath = this.generate(row.expression);
+        const relPath = path.posix.join(path.dirname(row.scope.path), removeQuotes(srcPath));
+        return `fs.writeFileSync("${relPath}", JSON.stringify([...${this.generate(row.expression)}], undefined, 2))`;
     }
 }
 
@@ -248,5 +324,5 @@ export function generate(hlFile: HLFileScope) {
     hlFile.allActions().forEach(row => {
         jsWriter.writeAction(row);
     });
-    console.log(jsWriter.output());
+    jsWriter.output();
 }

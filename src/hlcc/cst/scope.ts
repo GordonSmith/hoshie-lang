@@ -1,8 +1,8 @@
 import { HLError, HLNode, removeQuotes } from "./node";
 import { Declaration, HLDeclaration } from "./declaration";
-import { AdditiveExpression, ArrayExpression, BooleanExpression, EqualityExpression, IdentifierExpression, LogicalExpression, MultiplicativeExpression, NotExpression, NumericExpression, RelationalExpression, StringExpression, FunctionCallExpression, DataExpression } from "./expression";
+import { AdditiveExpression, ArrayExpression, BooleanExpression, EqualityExpression, IdentifierExpression, LogicalExpression, MultiplicativeExpression, NotExpression, NumericExpression, RelationalExpression, StringExpression, FunctionCallExpression, DataExpression, UnaryMinusExpression } from "./expression";
 import { HLAction, Test } from "./action";
-import { ConcatFunction, CountFunction, DeviationFunction, DistributionFunction, ExtentFunction, FilterFunction, FirstNFunction, GenerateFunction, GroupFunction, LengthFunction, MapFunction, MaxFunction, MeanFunction, MedianFunction, MinFunction, PipelineFunction, QuartileFunction, RandomFunction, ReadJsonFunction, ReduceFunction, SkipFunction, SortFunction, VarianceFunction } from "./function";
+import { CountFunction, DeviationFunction, DistributionFunction, ExtentFunction, FilterFunction, FirstNFunction, GenerateFunction, GroupCountFunction, GroupFunction, LengthFunction, MapFunction, MaxFunction, MeanFunction, MedianFunction, MinFunction, PipelineFunction, QuartileFunction, RandomFunction, ReadJsonFunction, ReduceFunction, SkipNFunction, SortFunction, VarianceFunction, WriteJsonFunction } from "./function";
 import { HLParserVisitor } from "../grammar/HLParserVisitor";
 import { ArrayType, BooleanType, NumberType, RowType, StringType, TypeDeclaration } from "./types";
 
@@ -165,6 +165,14 @@ export class HLScope extends HLParserVisitor {
         return new FunctionCallExpression(ctx, this, identifier.id, decl?.expression as any, args);
     }
 
+    visitUnaryMinusExpression(ctx) {
+        const [, expression] = super.visitUnaryMinusExpression(ctx);
+        if (expression.type !== "number") {
+            this.ctxError(ctx, "Expression is not number");
+        }
+        return new UnaryMinusExpression(ctx, this, expression);
+    }
+
     visitNotExpression(ctx) {
         const [, expression] = super.visitNotExpression(ctx);
         if (expression.type !== "boolean") {
@@ -241,7 +249,8 @@ export class HLScope extends HLParserVisitor {
     }
 
     visitArrayLiteralExpression(ctx) {
-        const [Arrayliteral] = super.visitArrayLiteralExpression(ctx);
+        const children = super.visitArrayLiteralExpression(ctx);
+        const [Arrayliteral, , arrType] = children;
         const [, literalItems] = Arrayliteral;
         const literals = literalItems === "]" ? [] : literalItems || [];
         literals.forEach(item => {
@@ -249,7 +258,9 @@ export class HLScope extends HLParserVisitor {
                 this.appendError(item, `All items must be type of "${literals[0].type}"`);
             }
         });
-        return new ArrayExpression(ctx, this, literals?.filter(row => !!row));
+        const retVal = new ArrayExpression(ctx, this, literals?.filter(row => !!row));
+        retVal.typeInfo(arrType);
+        return retVal;
     }
 
     visitElementList(ctx) {
@@ -271,8 +282,10 @@ export class HLScope extends HLParserVisitor {
 
     visitDataLiteralExpression(ctx) {
         const children = super.visitDataLiteralExpression(ctx);
-        const [[_, items]] = children;
-        return new DataExpression(ctx, this, items);
+        const [[_, items], , rowType] = children;
+        const retVal = new DataExpression(ctx, this, items);
+        retVal.typeInfo(rowType);
+        return retVal;
     }
 
     //  Types  ---
@@ -367,13 +380,13 @@ export class HLScope extends HLParserVisitor {
                 break;
             case "data[]":
                 if (asType?.type && !(asType?.type instanceof ArrayType)) {
-                    this.appendError(expression, "Expected \"as\" to be an Array?");
+                    this.appendError(expression, "Expected \"typeof\" to be an Array?");
                 }
                 expression.typeInfo && expression.typeInfo(asType?.type);
                 break;
             default:
                 if (asType && exprType !== asType.eval()) {
-                    this.appendError(expression, `Mismatched types "${expression.type}" as "${asType.eval()}"`);
+                    this.appendError(expression, `Mismatched types "${expression.type}" typeof "${asType.eval()}"`);
                 }
         }
         return expression;
@@ -462,16 +475,16 @@ export class HLScope extends HLParserVisitor {
                 default:
                     this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
             }
-        } else if (keyword.activity()?.Concat()) {
+        } else if (keyword.WriteJson()) {
             switch (params.length) {
-                case 1:
-                    const ref = resolveRef(params[0]);
-                    if (ref?.returnType !== "data[]") {
-                        this.ctxError(ctx, "Expression should resolve to a data[]");
+                case 2:
+                    const ref = resolveRef(params[1]);
+                    if (ref?.type !== "string") {
+                        this.ctxError(ctx, "Second paramater should be a string");
                     }
-                    return new ConcatFunction(ctx, this, params[0]);
+                    return new WriteJsonFunction(ctx, this, params[0], params[1]);
                 default:
-                    this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
+                    this.ctxError(ctx, "Invalid number of paramaters, expected 2.");
             }
         } else if (keyword.activity()?.Filter()) {
             switch (params.length) {
@@ -499,10 +512,21 @@ export class HLScope extends HLParserVisitor {
             switch (params.length) {
                 case 1:
                     const ref = resolveRef(params[0]);
-                    if (ref?.type !== "boolean" || ref?.type !== "number" || ref?.type !== "string") {
+                    if (ref?.returnType !== "boolean" && ref?.returnType !== "number" && ref?.returnType !== "string") {
                         this.ctxError(ctx, "Expression should resolve to a boolean, number or string");
                     }
                     return new GroupFunction(ctx, this, params[0]);
+                default:
+                    this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
+            }
+        } else if (keyword.activity()?.GroupCount()) {
+            switch (params.length) {
+                case 1:
+                    const ref = resolveRef(params[0]);
+                    if (ref?.returnType !== "boolean" && ref?.returnType !== "number" && ref?.returnType !== "string") {
+                        this.ctxError(ctx, "Expression should resolve to a boolean, number or string");
+                    }
+                    return new GroupCountFunction(ctx, this, params[0]);
                 default:
                     this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
             }
@@ -518,19 +542,19 @@ export class HLScope extends HLParserVisitor {
                     this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
             }
         } else if (keyword.activity()?.Pipeline()) {
-            if (params.length > 2) {
+            if (params.length >= 1) {
                 return new PipelineFunction(ctx, this, params);
             } else {
-                this.ctxError(ctx, "Invalid number of paramaters, expected 2 or more.");
+                this.ctxError(ctx, "Invalid number of paramaters, expected 1 or more.");
             }
-        } else if (keyword.activity()?.Skip()) {
+        } else if (keyword.activity()?.SkipN()) {
             switch (params.length) {
                 case 1:
                     const ref = resolveRef(params[0]);
                     if (ref?.type !== "number") {
                         this.ctxError(ctx, "Expression should resolve to a number");
                     }
-                    return new SkipFunction(ctx, this, params[0]);
+                    return new SkipNFunction(ctx, this, params[0]);
                 default:
                     this.ctxError(ctx, "Invalid number of paramaters, expected 1.");
             }

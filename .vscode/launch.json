@@ -43,10 +43,14 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
+            "runtimeArgs": [
+                "--no-warnings"
+            ],
             "program": "${workspaceFolder}/lib-umd/index.js",
+            "cwd": "${workspaceFolder}",
             "args": [
                 "run",
-                "./samples/tests/index.ho"
+                "${relativeFile}"
             ],
             "outFiles": [
                 "${workspaceFolder}/lib-umd/**/*.js"

@@ -1,0 +1,45 @@
+/*  
+    Pipeline Sensors.
+*/
+
+import { Person } from "./140-pipeline-filter";
+
+extractAge = (Person row) => row.age;
+
+myCount = count();
+myDeviation = deviation(extractAge);
+myDistribution = distribution(extractAge);
+myExtent = extent(extractAge);
+myMax = max(extractAge);
+myMean = mean(extractAge);
+myMedian = median(extractAge);
+myMin = min(extractAge);
+myQuartile = quartile(extractAge);
+myVariance = variance(extractAge);
+
+myProcess = pipeline(
+    myCount,
+    myDeviation,
+    myDistribution,
+    myExtent,
+    myMax,
+    myMean,
+    myMedian,
+    myMin,
+    myQuartile,
+    myVariance
+);
+
+data = readJson("./people.json");
+writeJson(myProcess(data), "./people-out.json");
+
+myCount;
+myDeviation;
+myDistribution;
+myExtent;
+myMax;
+myMean;
+myMedian;
+myMin;
+myQuartile;
+myVariance;

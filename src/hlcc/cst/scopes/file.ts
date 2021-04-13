@@ -6,6 +6,7 @@ import { Alias, HLDeclaration } from "../declaration";
 import { HLScope, Range } from "../scope";
 import { HLFunctionScope } from "./function";
 import { HLAction, Test } from "../action";
+import { TypeAlias, TypeDeclaration } from "../types";
 
 const posix = (windowsPath) => windowsPath.replace(/^\\\\\?\\/, "").replace(/\\/g, "\/").replace(/\/\/+/g, "\/");
 
@@ -18,7 +19,7 @@ export class HLFileScope extends HLScope {
     protected _parsed: ParseResponse;
 
     readonly importedFiles: ImportedHLFile[] = [];
-    readonly exports: { [id: string]: HLDeclaration } = {};
+    readonly exports: { [id: string]: HLDeclaration | TypeDeclaration } = {};
 
     constructor(readonly label: string, readonly path: string, readonly text?: string) {
         super(label, path, text);
@@ -28,14 +29,14 @@ export class HLFileScope extends HLScope {
 
         this._parsed = parse(text);
         if (this._parsed.full) {
-            // try {
-            this.visitProgram(this._parsed.tree);
-            // } catch (e) {
-            //     if (!this._parsed.lexErrors.length && !this._parsed.parseErrors.length) {
-            //         //  Unexpected visitor error...
-            //         console.error(e);
-            //     }
-            // }
+            try {
+                this.visitProgram(this._parsed.tree);
+            } catch (e) {
+                if (!this._parsed.lexErrors.length && !this._parsed.parseErrors.length) {
+                    //  Unexpected visitor error...
+                    console.error(e);
+                }
+            }
         }
     }
 
@@ -84,23 +85,31 @@ export class HLFileScope extends HLScope {
     //  Visitor overrides  ---
 
     visitImportStatement(ctx) {
-        const [, importForm] = super.visitImportStatement(ctx);
-        const [decls, file]: [{ identifier: string, as: string, ctx }[], HLFileScope] = importForm;
-        decls.shift();
-        decls.pop();
+        const children = super.visitImportStatement(ctx);
+        const [, importFrom] = children;
+        const [_decls, file]: [{ identifier: string, as: string, ctx }[], HLFileScope] = importFrom;
+        const decls = _decls.filter(item => typeof item !== "string");
         decls?.forEach(row => {
             const decl = file.exports[row.identifier];
             if (decl) {
-                if (row.as) {
-                    this.appendDeclaration(row.ctx, row.as, new Alias(row.ctx, this, row.as, decl));
+                if (decl instanceof TypeDeclaration) {
+                    if (row.as) {
+                        this.appendType(row.ctx, row.as, new TypeAlias(row.ctx, this, row.as, decl));
+                    } else {
+                        this.appendType(row.ctx, row.identifier, decl);
+                    }
                 } else {
-                    this.appendDeclaration(row.ctx, row.identifier, decl);
+                    if (row.as) {
+                        this.appendDeclaration(row.ctx, row.as, new Alias(row.ctx, this, row.as, decl));
+                    } else {
+                        this.appendDeclaration(row.ctx, row.identifier, decl);
+                    }
                 }
             } else {
                 this.ctxError(row.ctx, `${row.identifier} not exported from ${file.path}`);
             }
         });
-        return importForm;
+        return importFrom;
     }
 
     visitModuleItems(ctx) {
@@ -111,7 +120,7 @@ export class HLFileScope extends HLScope {
     visitImportDeclaration(ctx): { identifier: string, as: string, ctx } {
         const [id, , idAs] = ctx.children;
 
-        const identifier = id.identifier().getText();
+        const identifier = id.getText?.() || id.identifier().getText();
         const as = idAs?.identifier().getText();
 
         return { identifier, as, ctx };
