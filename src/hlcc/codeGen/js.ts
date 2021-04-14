@@ -67,7 +67,7 @@ ${this.outputBuffer(hoPath)}
 
     generate(row: any) {
         if (typeof row === "string") {
-            debugger;
+            // debugger;
             return row;
         } else if (typeof row === "undefined") {
             return "//  generate(undefined)";
@@ -102,7 +102,7 @@ ${this.outputBuffer(hoPath)}
 
     writeDecl(id: string, ref: any, scope: HLScope) {
         if (scope instanceof HLFunctionScope) {
-            debugger;
+            // debugger;
         }
         if (!this.fileContent[scope.path]) {
             this.fileContent[scope.path] = { declarations: {}, actions: [] };
@@ -313,7 +313,7 @@ ${row.returnExpression ? "return" : ""} ${this.generate(row.returnExpression)};`
     }
 
     WriteJsonFunction(row: WriteJsonFunction) {
-        const srcPath = this.generate(row.expression);
+        const srcPath = this.generate(row.path);
         const relPath = path.posix.join(path.dirname(row.scope.path), removeQuotes(srcPath));
         return `fs.writeFileSync("${relPath}", JSON.stringify([...${this.generate(row.expression)}], undefined, 2))`;
     }
