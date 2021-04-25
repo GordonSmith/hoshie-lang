@@ -14,7 +14,7 @@
             "program": "${workspaceFolder}/lib-umd/index.js",
             "args": [
                 "check",
-                "./samples/tests/index.ho"
+                "./tests/index.ho"
             ],
             "outFiles": [
                 "${workspaceFolder}/lib-umd/**/*.js"
@@ -78,7 +78,7 @@
             "program": "${workspaceFolder}/lib-umd/index.js",
             "args": [
                 "test",
-                "./samples/tests/index.ho"
+                "./tests/index.ho"
             ],
             "outFiles": [
                 "${workspaceFolder}/lib-umd/**/*.js"
@@ -94,7 +94,7 @@
                 "--disable-extensions",
                 "--extensionDevelopmentPath=${workspaceRoot}",
                 "--enable-proposed-api",
-                "${workspaceFolder}/samples"
+                "${workspaceFolder}/tutorial"
             ],
             "outFiles": [
                 "${workspaceRoot}/lib-umd/*.js"

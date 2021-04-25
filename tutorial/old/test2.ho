@@ -1,0 +1,18 @@
+
+Person = {string lname, string fname, string job, number age};
+
+inRowCount = count();
+outRowCount = count();
+
+ageDistribution = distribution((Person row) => row.age);
+
+myProcess = pipeline(ageDistribution);
+
+inData = readJson("./sampleData.json");
+outData = myProcess(inData);
+
+writeJson(outData, "./sampleOut.json");
+
+ageDistribution;
+
+//data;

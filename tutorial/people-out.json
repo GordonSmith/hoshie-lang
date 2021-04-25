@@ -1,0 +1,330 @@
+[
+  {
+    "fname": "Amari",
+    "lname": "Schoen",
+    "age": 95,
+    "job": "Architect",
+    "zipcode": "68093",
+    "state": "MO"
+  },
+  {
+    "fname": "Retta",
+    "lname": "Christiansen",
+    "age": 41,
+    "job": "Architect",
+    "zipcode": "14960-5495",
+    "state": "CO"
+  },
+  {
+    "fname": "Clinton",
+    "lname": "Ritchie",
+    "age": 83,
+    "job": "Architect",
+    "zipcode": "72212-3306",
+    "state": "WI"
+  },
+  {
+    "fname": "Merritt",
+    "lname": "Lueilwitz",
+    "age": 23,
+    "job": "Architect",
+    "zipcode": "06464",
+    "state": "KY"
+  },
+  {
+    "fname": "Edison",
+    "lname": "Fahey",
+    "age": 54,
+    "job": "Architect",
+    "zipcode": "55386",
+    "state": "AR"
+  },
+  {
+    "fname": "Tyreek",
+    "lname": "Mayert",
+    "age": 96,
+    "job": "Architect",
+    "zipcode": "05797-5271",
+    "state": "CT"
+  },
+  {
+    "fname": "Rosalinda",
+    "lname": "Orn",
+    "age": 98,
+    "job": "Architect",
+    "zipcode": "29332-6235",
+    "state": "WA"
+  },
+  {
+    "fname": "Hannah",
+    "lname": "Kuhic",
+    "age": 23,
+    "job": "Architect",
+    "zipcode": "48335-4109",
+    "state": "SD"
+  },
+  {
+    "fname": "Athena",
+    "lname": "Williamson",
+    "age": 83,
+    "job": "Architect",
+    "zipcode": "58502-9514",
+    "state": "NV"
+  },
+  {
+    "fname": "Santiago",
+    "lname": "Morar",
+    "age": 40,
+    "job": "Architect",
+    "zipcode": "57337-3428",
+    "state": "MS"
+  },
+  {
+    "fname": "Kiarra",
+    "lname": "Mayert",
+    "age": 16,
+    "job": "Architect",
+    "zipcode": "01818",
+    "state": "CA"
+  },
+  {
+    "fname": "Kamryn",
+    "lname": "Kassulke",
+    "age": 45,
+    "job": "Architect",
+    "zipcode": "06340-8285",
+    "state": "OH"
+  },
+  {
+    "fname": "Mercedes",
+    "lname": "Turner",
+    "age": 57,
+    "job": "Architect",
+    "zipcode": "41374",
+    "state": "TX"
+  },
+  {
+    "fname": "Trevor",
+    "lname": "Jerde",
+    "age": 13,
+    "job": "Architect",
+    "zipcode": "26291",
+    "state": "MT"
+  },
+  {
+    "fname": "Kennith",
+    "lname": "Franecki",
+    "age": 37,
+    "job": "Architect",
+    "zipcode": "70359-3130",
+    "state": "IA"
+  },
+  {
+    "fname": "Randy",
+    "lname": "Mills",
+    "age": 46,
+    "job": "Architect",
+    "zipcode": "15527-6870",
+    "state": "NE"
+  },
+  {
+    "fname": "Mozelle",
+    "lname": "Mayert",
+    "age": 64,
+    "job": "Architect",
+    "zipcode": "76709",
+    "state": "MA"
+  },
+  {
+    "fname": "Kenya",
+    "lname": "Bashirian",
+    "age": 24,
+    "job": "Architect",
+    "zipcode": "34775",
+    "state": "PA"
+  },
+  {
+    "fname": "Jessie",
+    "lname": "Fay",
+    "age": 41,
+    "job": "Architect",
+    "zipcode": "08067-8717",
+    "state": "SC"
+  },
+  {
+    "fname": "Alanis",
+    "lname": "Pagac",
+    "age": 67,
+    "job": "Architect",
+    "zipcode": "20910-3122",
+    "state": "RI"
+  },
+  {
+    "fname": "Rebecca",
+    "lname": "Auer",
+    "age": 25,
+    "job": "Architect",
+    "zipcode": "46832",
+    "state": "MA"
+  },
+  {
+    "fname": "Toby",
+    "lname": "Zemlak",
+    "age": 56,
+    "job": "Architect",
+    "zipcode": "30010",
+    "state": "MA"
+  },
+  {
+    "fname": "Vernie",
+    "lname": "Schamberger",
+    "age": 36,
+    "job": "Architect",
+    "zipcode": "22283-1477",
+    "state": "TX"
+  },
+  {
+    "fname": "Joshuah",
+    "lname": "Mante",
+    "age": 22,
+    "job": "Architect",
+    "zipcode": "62247-2985",
+    "state": "DE"
+  },
+  {
+    "fname": "Lavina",
+    "lname": "Langworth",
+    "age": 56,
+    "job": "Architect",
+    "zipcode": "44754",
+    "state": "NE"
+  },
+  {
+    "fname": "Oran",
+    "lname": "O'Kon",
+    "age": 32,
+    "job": "Architect",
+    "zipcode": "78353",
+    "state": "WV"
+  },
+  {
+    "fname": "Thurman",
+    "lname": "Harvey",
+    "age": 47,
+    "job": "Architect",
+    "zipcode": "55491",
+    "state": "LA"
+  },
+  {
+    "fname": "Bianka",
+    "lname": "Prohaska",
+    "age": 39,
+    "job": "Architect",
+    "zipcode": "05594-0319",
+    "state": "IA"
+  },
+  {
+    "fname": "Ari",
+    "lname": "Brown",
+    "age": 98,
+    "job": "Architect",
+    "zipcode": "89905",
+    "state": "NV"
+  },
+  {
+    "fname": "Russell",
+    "lname": "Champlin",
+    "age": 62,
+    "job": "Architect",
+    "zipcode": "97802",
+    "state": "WV"
+  },
+  {
+    "fname": "Haylie",
+    "lname": "Von",
+    "age": 27,
+    "job": "Architect",
+    "zipcode": "82191-2258",
+    "state": "ME"
+  },
+  {
+    "fname": "Delfina",
+    "lname": "Gerhold",
+    "age": 32,
+    "job": "Architect",
+    "zipcode": "86225-4279",
+    "state": "KS"
+  },
+  {
+    "fname": "Esmeralda",
+    "lname": "Johnston",
+    "age": 11,
+    "job": "Architect",
+    "zipcode": "96621-3830",
+    "state": "OH"
+  },
+  {
+    "fname": "Amara",
+    "lname": "Kirlin",
+    "age": 73,
+    "job": "Architect",
+    "zipcode": "36135",
+    "state": "VT"
+  },
+  {
+    "fname": "Bridget",
+    "lname": "Mertz",
+    "age": 56,
+    "job": "Architect",
+    "zipcode": "23918-1061",
+    "state": "DE"
+  },
+  {
+    "fname": "Fausto",
+    "lname": "Lakin",
+    "age": 10,
+    "job": "Architect",
+    "zipcode": "33500",
+    "state": "MI"
+  },
+  {
+    "fname": "Dee",
+    "lname": "Ritchie",
+    "age": 36,
+    "job": "Architect",
+    "zipcode": "99574-1755",
+    "state": "AL"
+  },
+  {
+    "fname": "Dashawn",
+    "lname": "Pollich",
+    "age": 55,
+    "job": "Architect",
+    "zipcode": "37835",
+    "state": "MS"
+  },
+  {
+    "fname": "Freddie",
+    "lname": "Abernathy",
+    "age": 52,
+    "job": "Architect",
+    "zipcode": "26074-8775",
+    "state": "MO"
+  },
+  {
+    "fname": "Alessandro",
+    "lname": "West",
+    "age": 67,
+    "job": "Architect",
+    "zipcode": "24860-6572",
+    "state": "KS"
+  },
+  {
+    "fname": "Myrna",
+    "lname": "Stiedemann",
+    "age": 48,
+    "job": "Architect",
+    "zipcode": "79439",
+    "state": "AZ"
+  }
+]
