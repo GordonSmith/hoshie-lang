@@ -11,9 +11,10 @@ _A new data centric programming language._
 6. `npm run install-deps`
 7. Open folder in vscode
 8. Run build task:  `Ctrl + Shift + B`
+9. Select "Extension" as the target launch configuration
 9. Launch debug session:  `F5`
 
-## Publishing a release
+## Packaging and installing a release
 
 ```
 npm install
