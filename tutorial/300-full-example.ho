@@ -20,7 +20,7 @@ myProcess = pipeline(inCount, filter(isArchitect), ageDistribution, outCount);
 
 data = readJson("./people.json");
 
-writeJson(myProcess(data), "./people-out.json");
+writeJson(myProcess(data), "./out-data/people-out.json");
 
 inCount;
 outCount;

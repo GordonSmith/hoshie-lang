@@ -20,5 +20,5 @@ extractPensioners = pipeline(filter(isPensioner));
 
 data = readJson("./people.json");
 
-writeJson(extractYoungAdults(data), "./people-out-youngAdults.json");
-writeJson(extractPensioners(data), "./people-out-pensioners.json");
+writeJson(extractYoungAdults(data), "./out-data/people-out-youngAdults.json");
+writeJson(extractPensioners(data), "./out-data/people-out-pensioners.json");

@@ -31,7 +31,7 @@ myProcess = pipeline(
 );
 
 data = readJson("./people.json");
-writeJson(myProcess(data), "./people-out.json");
+writeJson(myProcess(data), "./out-data/people-out.json");
 
 myCount;
 myDeviation;
