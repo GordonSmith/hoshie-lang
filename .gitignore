@@ -9,3 +9,4 @@ tmp/
 package-lock.json
 tutorial/out-js/
 tutorial/out-data/
+*.vsix
