@@ -1,0 +1,36 @@
+data2 = readJson("./sampleData.json");
+
+Person = {number age, string job};
+JobGroup = {string key, Person[] value};
+JobGroupCount = {string key, number total};
+
+inRowCount = count();
+filteredRowCount = count();
+ageStats = distribution((Person row) => row.age);
+supervisorAgeStats = distribution((Person row) => row.age);
+
+myProcess = pipeline(
+    inRowCount, 
+    filter((Person row) => row.age >= 20 && row.age < 30), 
+    ageStats, 
+    filter((Person row) => row.job == "Supervisor"),
+    supervisorAgeStats,
+    filteredRowCount
+    );
+
+myProcess(data2);
+
+jobsProcess = pipeline(groupCount((Person row) => row.job)));
+"In Row Count:";
+inRowCount;
+
+"Filtered Age Stats:";
+ageStats;
+
+"Supervisor Age Stats:";
+supervisorAgeStats;
+
+"Out Row Count:";
+filteredRowCount;
+
+jobsProcess(data2);

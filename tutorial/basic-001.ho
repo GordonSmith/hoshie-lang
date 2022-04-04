@@ -1,0 +1,63 @@
+// Type Defintions
+//  {} is called "Person is of type Set with the RHS concrete "
+{} Person = {string lname, string fname, number age, boolean male};
+Person[] students;
+Person father = {"Smith", "Gordon", 53};
+Person mother = {"Smith", "Gordon", 53};
+{} Family = {Person father, Person mother, Person[] children}
+
+{} Item2 = {string lname, string fname, number age, Item[]: children};
+Item2[] myParentList;
+
+{Person p, Item2 xxx}[] ArrOfStuff;
+
+
+// Primatives  ---
+boolean b = true;
+string s = "Hello";
+number n = 42.0;
+
+// Primatives Arrays  ---
+boolean[] b2 = [true];
+string[] s2 = ["Hello"];
+number[] n2 = [42.0];
+
+// Structures  ---
+Rec r = {"Smith", "John", 85};
+{string lname, string fname, number age} r = {"Smith", "John", 85};
+
+// Structure Arrays (Datasets)  ---
+Rec[] d = [{"Smith", "John", 85}, {"Doe", "Jane", 80}];
+{string lname, string fname, number age}[] d = [{"Smith", "John", 85}, {"Doe", "Jane", 80}];
+
+MyRec[] data = [{"smith", "Gordon", 52}];
+
+// Error test ---
+string s = 42;
+
+
+const oldPerson = (p: Person) => p.age > 65;
+const oldParents = (f: Family) => oldPerson(f.father) && oldPerson(f.mother);
+
+const canDrink = (number age): boolean => {
+    return age >= 18;
+};
+
+const plusTen = (number n): number => {
+    return n + 10;
+}
+
+const min = (pipeOfData data): number => {
+    mem X = NULL;
+        if (x > n @@ x == NULL) {
+            x = n;
+        }
+    return X;
+};
+
+
+
+min<age>(peeps);
+
+chain(oldParents, childMinAge);
+

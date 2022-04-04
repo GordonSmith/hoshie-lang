@@ -1,0 +1,24 @@
+/*  
+    Pipeline Filters.
+*/
+
+export Person = {
+    string fname, 
+    string lname,
+    number age,
+    string job,
+    string zipcode,
+    string state
+};
+
+isChild = (Person row) => row.age < 18;
+isYoungAdult = (Person row) => row.age >= 18 && row.age < 25;
+isPensioner = (Person row) => row.age >= 65;
+
+extractYoungAdults = pipeline(filter(isYoungAdult));
+extractPensioners = pipeline(filter(isPensioner));
+
+data = readJson("./people.json");
+
+writeJson(extractYoungAdults(data), "./people-out-youngAdults.json");
+writeJson(extractPensioners(data), "./people-out-pensioners.json");
