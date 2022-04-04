@@ -73,7 +73,6 @@ switch (cmd) {
                 unlinkSync(outPath(argv.file));// Deletes file
             };
             break; };
-        //if (!!!hlFile.text) { break; }
         console.log(`Running "${argv.file}"\n`);
         runScript(outPath(argv.file), function (err) {
             if (err) throw err;
