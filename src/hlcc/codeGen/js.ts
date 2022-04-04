@@ -58,7 +58,7 @@ ${this.outputDecl(hoPath)}
 
 ${this.outputBuffer(hoPath)}
 `;
-            fs.mkdirSync(path.dirname(jsPath), { recursive: true });            
+            fs.mkdirSync(path.dirname(jsPath), { recursive: true });
             fs.writeFileSync(jsPath, content);
             retVal.push(content);
         }
