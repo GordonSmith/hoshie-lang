@@ -7,4 +7,4 @@ out-js/
 node_modules/
 tmp/
 package-lock.json
-tutorial/*
+tutorial/
