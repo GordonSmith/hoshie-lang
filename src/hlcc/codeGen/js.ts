@@ -58,7 +58,7 @@ ${this.outputDecl(hoPath)}
 
 ${this.outputBuffer(hoPath)}
 `;
-            fs.mkdirSync(path.dirname(jsPath), { recursive: true });
+            fs.mkdirSync(path.dirname(jsPath), { recursive: true });            
             fs.writeFileSync(jsPath, content);
             retVal.push(content);
         }
@@ -319,10 +319,16 @@ ${row.returnExpression ? "return" : ""} ${this.generate(row.returnExpression)};`
     }
 }
 
-export function generate(hlFile: HLFileScope) {
+export function generate(hlFile: HLFileScope):boolean {
+    /*
+        This function will return true if a file is created and false if a file was not created.
+        This function will also create a file if there are actions to be run
+    */
+    if(hlFile.allActions().length == 0){return false;}
     const jsWriter = new JSWriter();
     hlFile.allActions().forEach(row => {
         jsWriter.writeAction(row);
     });
     jsWriter.output();
+    return true;
 }
