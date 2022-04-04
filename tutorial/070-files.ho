@@ -1,5 +1,0 @@
-// File Read
-data = readJson("./people.json");
-
-// File Write
-writeJson(data, "./people-out.json");

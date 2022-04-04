@@ -1,9 +1,0 @@
-//  Data Structures 
-{true, 123, "Hello World"};
-{true, 123, "Hello World"} typeof {boolean myBool, number aNumber, string theString};
-[{true, 123, "Hello World"}, {false, 321, "Bye!"}] typeof {boolean b, number n, string s}[];
-
-//  Typed Data Strucutures
-DataType = {boolean bool, number num, string str};
-{true, 123, "Hello World"} typeof DataType;
-[{true, 123, "Hello World"}, {false, 321, "Bye!"}] typeof DataType[];

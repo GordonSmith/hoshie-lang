@@ -1,5 +1,0 @@
-
-export str1 = "Hello";
-export str2 = "Welcome";
-export str3 = str1 + " and " + str2;;
-export strArr = ["Hello", "and", "Welcome", "!", str3, str3 + "!"];
