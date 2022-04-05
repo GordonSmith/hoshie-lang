@@ -20,6 +20,7 @@ export function outPath(inPath: string): string {
 
 class JSWriter {
     fileContent: FileContent = {};
+    hasOutput: boolean = false;
 
     append(line: string, path: string) {
         if (!this.fileContent[path]) {
@@ -43,6 +44,7 @@ class JSWriter {
     output() {
         const retVal: string[] = [];
         for (const hoPath in this.fileContent) {
+            this.hasOutput = true;
             // const outPath = hoPath.split(".");
             // outPath.pop();
             // outPath.push("js");
