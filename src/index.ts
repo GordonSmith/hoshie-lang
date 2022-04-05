@@ -68,11 +68,8 @@ switch (cmd) {
         hlFile = new HLFileScope("", argv.file);
         logErrors(hlFile);
         console.log(`Compiled "${argv.file}"`);
-        if(!generate(hlFile)){ 
-            if(existsSync(outPath(argv.file))){
-                unlinkSync(outPath(argv.file));// Deletes file
-            };
-            break; };
+        generate(hlFile);
+        if(!hlFile.hasAction()){ break; };
         console.log(`Running "${argv.file}"\n`);
         runScript(outPath(argv.file), function (err) {
             if (err) throw err;

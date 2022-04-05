@@ -319,16 +319,11 @@ ${row.returnExpression ? "return" : ""} ${this.generate(row.returnExpression)};`
     }
 }
 
-export function generate(hlFile: HLFileScope):boolean {
-    /*
-        This function will return true if a file is created and false if a file was not created.
-        This function will also create a file if there are actions to be run
-    */
-    if(hlFile.allActions().length == 0){return false;}
+export function generate(hlFile: HLFileScope){
     const jsWriter = new JSWriter();
+    if(fs.existsSync(outPath(hlFile.path))){fs.unlinkSync(outPath(hlFile.path));}
     hlFile.allActions().forEach(row => {
         jsWriter.writeAction(row);
     });
     jsWriter.output();
-    return true;
 }
