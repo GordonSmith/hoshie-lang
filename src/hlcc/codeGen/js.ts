@@ -33,7 +33,7 @@ class JSWriter {
         const retVal: string[] = [];
         for (const decl in this.fileContent[path].declarations) {
             retVal.push(`const ${decl} = ${this.fileContent[path].declarations[decl]};`);
-            }
+        }
         return retVal.join("\n");
     }
 
@@ -321,9 +321,11 @@ ${row.returnExpression ? "return" : ""} ${this.generate(row.returnExpression)};`
     }
 }
 
-export function generate(hlFile: HLFileScope){
+export function generate(hlFile: HLFileScope) {
     const jsWriter = new JSWriter();
-    if(fs.existsSync(outPath(hlFile.path))){fs.unlinkSync(outPath(hlFile.path));}
+    if (fs.existsSync(outPath(hlFile.path))) {
+        fs.unlinkSync(outPath(hlFile.path));
+    };
     hlFile.allActions().forEach(row => {
         jsWriter.writeAction(row);
     });

@@ -93,18 +93,12 @@ export class HLScope extends HLParserVisitor {
         return this._actions;
     }
 
-    hasAction():boolean {
-        if (this._actions.length == 0){
-            return false;
-        }
-        return true;
+    hasAction(): boolean {
+        return this._actions.length > 0;
     }
 
-    hasError():boolean {
-        if(this._errors.length == 0){
-            return false;
-        }
-        return true;
+    hasError(): boolean {
+        return this._errors.length > 0;
     }
 
     tests(): Test[] {

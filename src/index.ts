@@ -69,7 +69,7 @@ switch (cmd) {
         logErrors(hlFile);
         console.log(`Compiled "${argv.file}"`);
         generate(hlFile);
-        if(!hlFile.hasAction()){ break; };
+        if (!hlFile.hasAction()) { break; };
         console.log(`Running "${argv.file}"\n`);
         runScript(outPath(argv.file), function (err) {
             if (err) throw err;
