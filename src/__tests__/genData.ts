@@ -1,5 +1,18 @@
 import * as fs from "fs";
+import * as path from "path";
 import * as faker from "faker";
+
+function createDirectories(pathname) {
+    const __dirname = path.resolve();
+    pathname = pathname.replace(/^\.*\/|\/?[^\/]+\.[a-z]+|\/$/g, ""); // Remove leading directory markers, and remove ending /file-name.extension
+    fs.mkdir(path.resolve(__dirname, pathname), { recursive: true }, e => {
+        if (e) {
+            console.error(e);
+        } else {
+            console.log("Success");
+        }
+    });
+}
 
 faker.seed(123);
 
@@ -58,5 +71,7 @@ export function* peopleLite(total = 1000) {
 }
 
 export const population: Person[] = [...people()];
+
+createDirectories("./samples");
 
 fs.writeFileSync("./samples/people.json", JSON.stringify([...peopleLite()], undefined, 2));

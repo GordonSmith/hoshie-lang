@@ -7,18 +7,13 @@ module.exports = {
     ],
     extends: [
         "eslint:recommended",
-        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended"
     ],
     env: {
         "browser": true,
         "amd": true
     },
     globals: {
-        "dojo": "readonly",
-        "dijit": "readonly",
-        "dojoConfig": "readonly",
-        "debugConfig": "readonly",
-        "Promise": "readonly"
     },
     rules: {
         "no-redeclare": "off",
@@ -37,7 +32,9 @@ module.exports = {
                 max: 1
             }
         ],
-
+        "no-console": [0, {
+            "allow": ["info", "warn", "error"]
+        }],
         "func-call-spacing": ["error", "never"],
         "space-before-function-paren": ["error", {
             "anonymous": "always",

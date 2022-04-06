@@ -6,7 +6,6 @@ import { generate, outPath } from "./hlcc/codeGen/js";
 import * as childProcess from "child_process";
 import { fstat, existsSync, unlinkSync } from "fs";
 
-
 function runScript(scriptPath, callback) {
 
     // keep track of whether callback has been invoked to prevent multiple invocations
@@ -69,7 +68,7 @@ switch (cmd) {
         logErrors(hlFile);
         console.log(`Compiled "${argv.file}"`);
         generate(hlFile);
-        if (!hlFile.hasAction()) { break; };
+        if (!hlFile.hasAction()) { break; }
         console.log(`Running "${argv.file}"\n`);
         runScript(outPath(argv.file), function (err) {
             if (err) throw err;
