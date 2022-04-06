@@ -325,7 +325,7 @@ export function generate(hlFile: HLFileScope) {
     const jsWriter = new JSWriter();
     if (fs.existsSync(outPath(hlFile.path))) {
         fs.unlinkSync(outPath(hlFile.path));
-    };
+    }
     hlFile.allActions().forEach(row => {
         jsWriter.writeAction(row);
     });
