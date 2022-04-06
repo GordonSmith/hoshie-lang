@@ -20,7 +20,7 @@ myProcess = pipeline(
 startCount;
 endCount;
 
-writeJson(myProcess(data), "./people-out.json");
+writeJson(myProcess(data), "./out-data/people-out.json");
 
 "\nAfter Process:";
 startCount;         //  Only 6 rows processed!!!

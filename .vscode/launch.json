@@ -14,7 +14,7 @@
             "program": "${workspaceFolder}/lib-umd/index.js",
             "args": [
                 "check",
-                "./tests/index.ho"
+                "${relativeFile}"
             ],
             "outFiles": [
                 "${workspaceFolder}/lib-umd/**/*.js"
@@ -30,7 +30,7 @@
             "program": "${workspaceFolder}/lib-umd/index.js",
             "args": [
                 "compile",
-                "./samples/simple.ho"
+                "${relativeFile}"
             ],
             "outFiles": [
                 "${workspaceFolder}/lib-umd/**/*.js"
@@ -78,7 +78,7 @@
             "program": "${workspaceFolder}/lib-umd/index.js",
             "args": [
                 "test",
-                "./tests/index.ho"
+                "${relativeFile}"
             ],
             "outFiles": [
                 "${workspaceFolder}/lib-umd/**/*.js"

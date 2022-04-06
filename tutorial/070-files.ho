@@ -2,4 +2,4 @@
 data = readJson("./people.json");
 
 // File Write
-writeJson(data, "./people-out.json");
+writeJson(data, "./out-data/people-out.json");
