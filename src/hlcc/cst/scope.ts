@@ -76,7 +76,7 @@ export class HLScope extends HLParserVisitor {
         let retVal: HLError[] = [];
         for (const key in this.declarations) {
             if (this.declarations[key]?.expression?.errors) {
-                retVal = [...retVal, ...this.declarations[key]?.expression?.errors()];
+                retVal = [...retVal, ...this.declarations[key].expression.errors()];
             }
         }
         return retVal;

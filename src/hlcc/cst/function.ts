@@ -8,13 +8,11 @@ import { ArrayType, RowType } from "./types";
 export class HLFunction extends HLNode implements RHS {
 
     get type(): ExpresionType {
-        debugger;
-        return undefined;
+        throw new Error("Method not implemented.");
     }
 
     eval(): ExpresionT {
-        debugger;
-        return undefined;
+        throw new Error("Method not implemented.");
     }
 
     errors(): HLError[] {

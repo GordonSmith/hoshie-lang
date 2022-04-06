@@ -85,6 +85,19 @@
             ]
         },
         {
+            "name": "gen data",
+            "type": "pwa-node",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/lib-umd/__tests__/genData.js",
+            "args": [],
+            "outFiles": [
+                "${workspaceFolder}/lib-umd/**/*.js"
+            ]
+        },
+        {
             "name": "Extension",
             "type": "extensionHost",
             "request": "launch",
