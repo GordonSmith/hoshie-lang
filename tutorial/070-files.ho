@@ -1,5 +1,5 @@
 // File Read
-data = readJson("./people.json");
+data = readJson("../samples/people.json");
 
 // File Write
 writeJson(data, "./out-data/people-out.json");

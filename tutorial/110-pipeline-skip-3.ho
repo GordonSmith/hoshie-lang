@@ -3,7 +3,7 @@
     Fetches rows 4, 5 and 6 from people.json
 */
 
-data = readJson("./people.json");
+data = readJson("../samples/people.json");
 
 myProcess = pipeline(skipN(3), firstN(3));
 
