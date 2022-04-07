@@ -5,6 +5,9 @@ import { HLAction, Test } from "./action";
 import { CountFunction, DeviationFunction, DistributionFunction, ExtentFunction, FilterFunction, FirstNFunction, GenerateFunction, GroupCountFunction, GroupFunction, LengthFunction, MapFunction, MaxFunction, MeanFunction, MedianFunction, MinFunction, PipelineFunction, QuartileFunction, RandomFunction, ReadJsonFunction, ReduceFunction, SkipNFunction, SortFunction, VarianceFunction, WriteJsonFunction } from "./function";
 import { HLParserVisitor } from "../grammar/HLParserVisitor";
 import { ArrayType, BooleanType, NumberType, RowType, StringType, TypeDeclaration } from "./types";
+import { posix } from "../../utils";
+import { existsSync } from "fs";
+import * as path from "path";
 
 export interface Range {
     line: number,
@@ -478,6 +481,10 @@ export class HLScope extends HLParserVisitor {
                     const ref = resolveRef(params[0]);
                     if (ref?.type !== "string") {
                         this.ctxError(ctx, "Expression should resolve to a string");
+                    }
+                    const relFilePath = posix(path.join(path.dirname(this.path), ref?.value));
+                    if (!existsSync(relFilePath)) {
+                        this.ctxError(ctx, "Invalid file path");
                     }
                     return new ReadJsonFunction(ctx, this, params[0]);
                 default:
