@@ -18,7 +18,7 @@ isPensioner = (Person row) => row.age >= 65;
 extractYoungAdults = pipeline(filter(isYoungAdult));
 extractPensioners = pipeline(filter(isPensioner));
 
-data = readJson("./people.json");
+data = readJson("../samples/people.json");
 
 writeJson(extractYoungAdults(data), "./out-data/people-out-youngAdults.json");
 writeJson(extractPensioners(data), "./out-data/people-out-pensioners.json");

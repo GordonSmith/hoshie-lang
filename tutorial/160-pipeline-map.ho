@@ -24,6 +24,6 @@ toPersonEx = (Person row) => {
 
 mapPerson = pipeline(map(toPersonEx));
 
-data = readJson("./people.json");
+data = readJson("../samples/people.json");
 
 mapPerson(data);
