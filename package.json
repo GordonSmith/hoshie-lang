@@ -53,11 +53,11 @@
     "dependencies": {
         "@hpcc-js/dataflow": "8.1.2",
         "@hpcc-js/util": "2.46.2",
-        "antlr4": "4.9.3",
+        "antlr4": "~4.7.0",
         "yargs": "16.2.0"
     },
     "devDependencies": {
-        "@types/antlr4": "4.7.2",
+        "@types/antlr4": "~4.7.0",
         "@types/chai": "4.3.0",
         "@types/mocha": "9.1.0",
         "@types/node": "16.11.26",
