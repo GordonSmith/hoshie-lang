@@ -7,8 +7,7 @@ import { HLScope, Range } from "../scope";
 import { HLFunctionScope } from "./function";
 import { HLAction, Test } from "../action";
 import { TypeAlias, TypeDeclaration } from "../types";
-
-const posix = (windowsPath) => windowsPath.replace(/^\\\\\?\\/, "").replace(/\\/g, "\/").replace(/\/\/+/g, "\/");
+import { posix } from "../../../utils";
 
 export interface ImportedHLFile extends Range {
     file: HLFileScope;

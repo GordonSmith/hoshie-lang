@@ -5,6 +5,7 @@ import { HLAction, Test } from "./action";
 import { CountFunction, DeviationFunction, DistributionFunction, ExtentFunction, FilterFunction, FirstNFunction, GenerateFunction, GroupCountFunction, GroupFunction, LengthFunction, MapFunction, MaxFunction, MeanFunction, MedianFunction, MinFunction, PipelineFunction, QuartileFunction, RandomFunction, ReadJsonFunction, ReduceFunction, SkipNFunction, SortFunction, VarianceFunction, WriteJsonFunction } from "./function";
 import { HLParserVisitor } from "../grammar/HLParserVisitor";
 import { ArrayType, BooleanType, NumberType, RowType, StringType, TypeDeclaration } from "./types";
+import { posix } from "../../utils";
 
 export interface Range {
     line: number,
