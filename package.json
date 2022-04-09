@@ -6,7 +6,7 @@
     "main": "./lib-umd/extension.js",
     "scripts": {
         "install-deps": "run-script-os",
-        "install-depsL:nix": "sudo apt install antlr4",
+        "install-deps:linux": "sudo apt install antlr4",
         "install-deps:windows": "wsl -u root -e install antlr4",
         "clean": "rimraf ./grammar/.antlr ./grammar/*.txt ./src/hlcc/grammar/*.{interp,js,ts,tokens} ./lib-* ./build ./dist",
         "grammar-generate-ts": "antlr4ts -o ./src/hlcc/grammar -visitor ./grammar/HL.g4",

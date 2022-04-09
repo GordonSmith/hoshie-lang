@@ -2,7 +2,7 @@ name: Test PR
 
 on:
   pull_request:
-    branches: [trunk]
+    branches: [main]
 
 jobs:
   build:
@@ -21,6 +21,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           scope: "@hpcc-js"
       - run: npm ci
+      - run: npm run install-deps
       - run: npm run lint
       - run: npm run build
       # - run: npm run test
