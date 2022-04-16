@@ -17,6 +17,7 @@
         "compile": "tsc",
         "compile-watch": "run-s \"compile -- -w\"",
         "build": "run-s grammar-generate compile",
+        "build-docs": "vitepress build .",
         "watch": "run-p compile-watch grammar-watch",
         "lint": "eslint \"src/**/*.ts*\"",
         "lint-fix": "eslint --fix \"src/**/*.ts*\"",
@@ -26,6 +27,8 @@
         "vsce-package": "vsce package",
         "vsce-install": "code --install-extension hoshi-lang-1.0.0.vsix",
         "vsce-uninstall": "code --uninstall-extension AlexSMith.hoshi-lang",
+        "serve-docs": "vitepress dev .",
+        "serve-docs-build": "vitepress serve --port 3000 .",
         "update": "npx npm-check-updates -u -t minor"
     },
     "author": "",
@@ -57,6 +60,7 @@
         "rimraf": "3.0.2",
         "run-script-os": "^1.1.6",
         "typescript": "4.6.3",
+        "vitepress": "0.22.3",
         "vsce": "2.7.0",
         "watch": "1.0.2"
     },
