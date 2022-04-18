@@ -18,7 +18,7 @@ ageDist = distribution((Person row) => row.age);
 
 myProcess = pipeline(inCount, filter(isArchitect), ageDist, outCount);
 
-data = readJson("../samples/people.json");
+data = readJson("./data/people.json");
 
 writeJson(myProcess(data), "./out-data/people-out.json");
 

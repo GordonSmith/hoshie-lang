@@ -30,7 +30,7 @@ myProcess = pipeline(
     myVariance
 );
 
-data = readJson("../samples/people.json");
+data = readJson("./data/people.json");
 writeJson(myProcess(data), "./out-data/people-out.json");
 
 myCount;

@@ -3,7 +3,7 @@
     Fetches first 3 rows from people.json.
 */
 
-data = readJson("../samples/people.json");
+data = readJson("./data/people.json");
 
 myProcess = pipeline(firstN(3));
 

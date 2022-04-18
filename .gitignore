@@ -5,7 +5,9 @@ grammar/*.txt
 lib-*/
 out-js/
 node_modules/
+samples/
 tmp/
+tutorial/data/
 tutorial/out-js/
 tutorial/out-data/
 *.vsix

@@ -6,6 +6,6 @@ import { Person } from "./140-pipeline-filter";
 
 sortByAge = pipeline(sort((Person l, Person r) => l.age - r.age));
 
-data = readJson("../samples/people.json");
+data = readJson("./data/people.json");
 
 sortByAge(data);
