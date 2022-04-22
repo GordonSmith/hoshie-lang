@@ -3,7 +3,7 @@
     A pipeline declaration is just another "activity"
 */
 
-data = readJson("../samples/people.json");
+data = readJson("./data/people.json");
 
 startCount = count();
 endCount = count();

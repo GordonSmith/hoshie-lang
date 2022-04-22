@@ -1,16 +1,28 @@
 import { expect } from "chai";
 import { HLFileScope } from "../hlcc/cst/scopes/file";
-import { parse } from "../hlcc/parser";
+
+import fs from "fs";
+const path = "./tutorial/";
+
+const filesArray = fs.readdirSync(path).filter(file => fs.lstatSync(path + file).isFile());
 
 describe("hlcc/parser", () => {
-    it.only("basic", async () => {
-        const hlFile = new HLFileScope("basic", "./samples/test-basic-001.ho");
-        const errors = hlFile.allErrors();
-        expect(errors.length).to.equal(0);
-    });
-
-    it.skip("errors", async () => {
-        const parsed = await parse("./samples/error-001.ho");
-        expect(parsed.parseErrors.length).to.be.greaterThan(0);
+    describe("tutorial", () => {
+        filesArray.forEach(file => {
+            it.only(file, async () => {
+                const hlFile = new HLFileScope("basic", `./tutorial/${file}`);
+                const errors = hlFile.allErrors();
+                switch (file) {
+                    case "expresions.ho":
+                        expect(errors.length).to.equal(3);
+                        break;
+                    default:
+                        expect(errors.length).to.equal(0);
+                        if (errors.length) {
+                            console.log(errors);
+                        }
+                }
+            });
+        });
     });
 });

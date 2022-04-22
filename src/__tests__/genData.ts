@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import * as faker from "faker";
+import faker from "@faker-js/faker";
 
 function createDirectories(pathname) {
     const __dirname = path.resolve();
@@ -72,6 +72,6 @@ export function* peopleLite(total = 1000) {
 
 export const population: Person[] = [...people()];
 
-createDirectories("./samples");
+createDirectories("./tutorial/data");
 
-fs.writeFileSync("./samples/people.json", JSON.stringify([...peopleLite()], undefined, 2));
+fs.writeFileSync("./tutorial/data/people.json", JSON.stringify([...peopleLite()], undefined, 2));

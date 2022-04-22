@@ -1,12 +1,10 @@
-
-
 a = true;
 b = "false";
 c = a;
 d = !false;
-d2 = !43;
+d2 = !43;       // Error: expression is not boolean
 e = 4 + 1;
 f = 4 - 1;
-g = 4 - "1";
-h = a1;
+g = 4 - "1";    // Error:  Additive Expression is not valid
+h = a1;         // Error:  Invalid identifier "a1"
 export z = 42;

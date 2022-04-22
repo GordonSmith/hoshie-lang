@@ -8,7 +8,7 @@ jobGroups = pipeline(group((Person row) => row.job), firstN(1));
 
 jobCountGroups = pipeline(groupCount((Person row) => row.job));
 
-data = readJson("../samples/people.json");
+data = readJson("./data/people.json");
 
 jobGroups(data);
 jobCountGroups(data);
