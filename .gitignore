@@ -1,3 +1,5 @@
+.vitepress/cache
+.vitepress/dist
 build/
 docs/report
 grammar/.antlr
